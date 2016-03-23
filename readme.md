@@ -13,6 +13,8 @@
 [GoReportCard]: https://goreportcard.com/report/github.com/willfaught/gockle
 [GoReportCard Widget]: https://goreportcard.com/badge/github.com/willfaught/gockle
 
+`Session`, `Iterator`, and `Batch` wrap counterpart `gocql` types.
+
 The entry point is `NewSession`. Call it with a `*gocql.Session` to get a `Session`.
 
 A `gocql.Session` method has a counterpart in `Session`:
