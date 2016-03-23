@@ -13,6 +13,8 @@
 [GoReportCard]: https://goreportcard.com/report/github.com/willfaught/gockle
 [GoReportCard Widget]: https://goreportcard.com/badge/github.com/willfaught/gockle
 
+## Overview
+
 `Session`, `Iterator`, and `Batch` wrap counterpart `gocql` types.
 
 The entry point is `NewSession`. Call it with a `*gocql.Session` to get a `Session`.
@@ -43,3 +45,41 @@ The rest:
 - `Session.QueryIterate` returns an `Iterator` to iterate rows
 - `Session.Tables` returns the table names of a keyspace
 - `Session.Columns` returns the column names and types of a table
+
+##  Examples
+
+Insert a row:
+
+    var s = NewSession(...)
+
+    if err := s.QueryExecute("insert into users (id, name) values (123, 'me')"); err != nil {
+        return err
+    }
+
+Print all rows:
+
+    var s = NewSession(...)
+    var i = s.QueryIterate("select * from users")
+
+    for done := false; !done; {
+        var m = map[string]interface{}{}
+
+        done = i.ScanMap(m)
+
+        fmt.Println(m)
+    }
+
+    if err := i.Close(); err != nil {
+        return err
+    }
+
+Dump all rows:
+
+    var s = NewSession(...)
+    var m, err = s.QueryScanMap("select * from users")
+
+    if err != nil {
+        return err
+    }
+
+    fmt.Println(m)
