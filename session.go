@@ -14,6 +14,9 @@ type Session interface {
 	// Columns returns a map from column names to types for keyspace and table.
 	Columns(keyspace, table string) (map[string]gocql.TypeInfo, error)
 
+	// QueryBatch returns a Batch with type kind for batched queries.
+	QueryBatch(kind BatchKind) Batch
+
 	// QueryExecute runs statement with arguments.
 	QueryExecute(statement string, arguments ...interface{}) error
 
@@ -72,6 +75,10 @@ func (s session) Columns(keyspace, table string) (map[string]gocql.TypeInfo, err
 	}
 
 	return types, nil
+}
+
+func (s session) QueryBatch(kind BatchKind) Batch {
+	return &batch{b: s.s.NewBatch(gocql.BatchType(kind)), s: s.s}
 }
 
 func (s session) QueryExecute(statement string, arguments ...interface{}) error {
