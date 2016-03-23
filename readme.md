@@ -15,17 +15,28 @@
 
 ## Overview
 
-`Session`, `Iterator`, and `Batch` wrap counterpart `gocql` types.
+`Batch`, `Iterator`, and `Session` wrap counterpart `gocql` types.
 
 The entry point is `NewSession`. Call it with a `*gocql.Session` to get a `Session`.
-
-A `gocql.Session` method has a counterpart in `Session`:
-
-- `gocql.Session.Close`: `Session.Close`
 
 A `gocql.Iter` method has a counterpart in `Session`:
 
 - `gocql.Iter.SliceMap`: `Session.QuerySliceMap`
+
+A `gocql.Batch` method has a counterpart in `Batch`:
+
+- `gocql.Batch.Query`: `Batch.Query`
+
+Some `gocql.Session` methods have counterparts in `Batch`:
+
+- `gocql.Session.ExecuteBatch`: `Batch.Execute`
+- `gocql.Session.ExecuteBatchCAS`: `Batch.ExecuteTransaction`
+- `gocql.Session.MapExecuteBatchCAS`: `Batch.ExecuteTransactionMap`
+
+Some `gocql.Session` methods have counterparts in `Session`:
+
+- `gocql.Session.Close`: `Session.Close`
+- `gocql.Session.NewBatch`: `Session.QueryBatch`
 
 Some `gocql.Query` methods have counterparts in `Session`:
 
