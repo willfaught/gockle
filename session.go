@@ -20,17 +20,20 @@ type Session interface {
 	// QueryExecute runs statement with arguments.
 	QueryExecute(statement string, arguments ...interface{}) error
 
-	// QueryIterate runs statement with arguments and returns an Iterator for the results.
+	// QueryIterate runs statement with arguments and returns an Iterator for
+	// the results.
 	QueryIterate(statement string, arguments ...interface{}) Iterator
 
 	// QueryScan runs statement with arguments.
 	QueryScan(statement string, arguments, results []interface{}) error
 
-	// QueryScanMap runs statement with arguments and puts the first result row in results.
+	// QueryScanMap runs statement with arguments and puts the first result row
+	// in results.
 	QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
 
-	// QueryScanMapTransaction runs statement with arguments as a lightweight transaction and puts the first result row in results.
-	// It returns whether the transaction succeeded. If not, it puts the old values in results.
+	// QueryScanMapTransaction runs statement with arguments as a lightweight
+	// transaction and puts the first result row in results. It returns whether
+	// the transaction succeeded. If not, it puts the old values in results.
 	QueryScanMapTransaction(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
 	// QuerySliceMap runs statement with arguments and returns all result rows.

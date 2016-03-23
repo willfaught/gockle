@@ -7,12 +7,14 @@ type Batch interface {
 	// Execute executes each query in order.
 	Execute() error
 
-	// ExecuteTransaction executes each query in order. It puts the first result row in results.
-	// If successful, it returns true and an Iterator that ranges over the conditional statement results.
+	// ExecuteTransaction executes each query in order. It puts the first
+	// result row in results. If successful, it returns true and an Iterator
+	// that ranges over the conditional statement results.
 	ExecuteTransaction(results ...interface{}) (bool, Iterator, error)
 
-	// ExecuteTransactionMap executes each query in order. It puts the first result row in results.
-	// If successful, it returns true and an Iterator that ranges over the conditional statement results.
+	// ExecuteTransactionMap executes each query in order. It puts the first
+	// result row in results. If successful, it returns true and an Iterator
+	// that ranges over the conditional statement results.
 	ExecuteTransactionMap(results map[string]interface{}) (bool, Iterator, error)
 
 	// Query adds the query for statement and arguments.
