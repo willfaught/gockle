@@ -25,14 +25,14 @@ A `gocql.Iter` method has a counterpart in `Session`:
 
 - `gocql.Iter.SliceMap`: `Session.QuerySliceMap`
 
-Some of the `gocql.Query` methods have counterparts in `Session`:
+Some `gocql.Query` methods have counterparts in `Session`:
 
 - `gocql.Query.Exec`: `Session.QueryExecute`
 - `gocql.Query.MapScan`: `Session.QueryScanMap`
 - `gocql.Query.MapScanCAS`: `Session.QueryScanMapTransaction`
 - `gocql.Query.Scan`: `Session.QueryScan`
 
-Some of the `gocql.Iter` methods have counterparts in `Iterator`:
+Some `gocql.Iter` methods have counterparts in `Iterator`:
 
 - `gocql.Iter.Close`: `Iterator.Close`
 - `gocql.Iter.Scan`: `Iterator.Scan`
