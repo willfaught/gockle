@@ -2,6 +2,8 @@
 
 *gocql: GOC-QuL*
 
+**Gockle simplifies and mocks [gocql](https://github.com/gocql/gocql).** Use it if you don't need to customize batches or queries.
+
 [![GoDoc Widget]][GoDoc] [![Travis Widget]][Travis] [![GoReportCard Widget]][GoReportCard]
 
 [GoDoc]: https://godoc.org/github.com/willfaught/gockle
@@ -10,8 +12,6 @@
 [Travis Widget]: https://travis-ci.org/willfaught/gockle.svg?branch=master
 [GoReportCard]: https://goreportcard.com/report/github.com/willfaught/gockle
 [GoReportCard Widget]: https://goreportcard.com/badge/github.com/willfaught/gockle
-
-**Gockle simplifies and mocks [gocql](https://github.com/gocql/gocql).** Use it if you don't need to customize batches or queries.
 
 The entry point is `NewSession`. Call it with a `*gocql.Session` to get a `Session`.
 
