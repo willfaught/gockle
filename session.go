@@ -6,28 +6,40 @@ import (
 	"github.com/gocql/gocql"
 )
 
+// Session wraps *gocql.Session.
 type Session interface {
+	// Close closes the session.
 	Close()
 
+	// Columns returns a map from column names to types for keyspace and table.
 	Columns(keyspace, table string) (map[string]gocql.TypeInfo, error)
 
+	// QueryExecute runs statement with arguments.
 	QueryExecute(statement string, arguments ...interface{}) error
 
+	// QueryIterate runs statement with arguments and returns an Iterator for the results.
 	QueryIterate(statement string, arguments ...interface{}) Iterator
 
+	// QueryScan runs statement with arguments.
 	QueryScan(statement string, arguments, results []interface{}) error
 
+	// QueryScanMap runs statement with arguments and puts the first result row in results.
 	QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
 
+	// QueryScanMapTransaction runs statement with arguments as a lightweight transaction and puts the first result row in results.
+	// It returns whether the transaction succeeded. If not, it puts the old values in results.
 	QueryScanMapTransaction(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
+	// QuerySliceMap runs statement with arguments and returns all result rows.
 	QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
 
+	// Tables returns the table names for keyspace.
 	Tables(keyspace string) ([]string, error)
 }
 
 var _ Session = session{}
 
+// NewSession returns a new Session for s.
 func NewSession(s *gocql.Session) Session {
 	return session{s: s}
 }
