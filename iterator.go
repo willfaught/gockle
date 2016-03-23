@@ -1,6 +1,9 @@
 package gockle
 
-import "github.com/gocql/gocql"
+import (
+	"github.com/gocql/gocql"
+	"github.com/maraino/go-mock"
+)
 
 // Iterator wraps *gocql.Iter.
 type Iterator interface {
@@ -16,7 +19,30 @@ type Iterator interface {
 	ScanMap(results map[string]interface{}) bool
 }
 
-var _ Iterator = iterator{}
+var (
+	_ Iterator = IteratorMock{}
+	_ Iterator = iterator{}
+)
+
+// IteratorMock is a mock Iterator.
+type IteratorMock struct {
+	mock.Mock
+}
+
+// Close implements Iterator.
+func (m IteratorMock) Close() error {
+	return m.Called().Error(0)
+}
+
+// Scan implements Iterator.
+func (m IteratorMock) Scan(results ...interface{}) bool {
+	return m.Called(results).Bool(0)
+}
+
+// ScanMap implements Iterator.
+func (m IteratorMock) ScanMap(results map[string]interface{}) bool {
+	return m.Called(results).Bool(0)
+}
 
 type iterator struct {
 	i *gocql.Iter

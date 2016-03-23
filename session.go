@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gocql/gocql"
+	"github.com/maraino/go-mock"
 )
 
 // Session wraps *gocql.Session.
@@ -48,6 +49,69 @@ var _ Session = session{}
 // NewSession returns a new Session for s.
 func NewSession(s *gocql.Session) Session {
 	return session{s: s}
+}
+
+// SessionMock is a mock Session.
+type SessionMock struct {
+	mock.Mock
+}
+
+// Close implements Session.
+func (m SessionMock) Close() {
+	m.Called()
+}
+
+// Columns implements Session.
+func (m SessionMock) Columns(keyspace, table string) (map[string]gocql.TypeInfo, error) {
+	var r = m.Called(keyspace, table)
+
+	return r.Get(0).(map[string]gocql.TypeInfo), r.Error(1)
+}
+
+// QueryBatch implements Session.
+func (m SessionMock) QueryBatch(kind BatchKind) Batch {
+	return m.Called(kind).Get(0).(Batch)
+}
+
+// QueryExecute implements Session.
+func (m SessionMock) QueryExecute(statement string, arguments ...interface{}) error {
+	return m.Called(statement, arguments).Error(0)
+}
+
+// QueryIterate implements Session.
+func (m SessionMock) QueryIterate(statement string, arguments ...interface{}) Iterator {
+	return m.Called(statement, arguments).Get(0).(Iterator)
+}
+
+// QueryScan implements Session.
+func (m SessionMock) QueryScan(statement string, arguments, results []interface{}) error {
+	return m.Called(statement, arguments, results).Error(0)
+}
+
+// QueryScanMap implements Session.
+func (m SessionMock) QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error {
+	return m.Called(statement, arguments, results).Error(0)
+}
+
+// QueryScanMapTransaction implements Session.
+func (m SessionMock) QueryScanMapTransaction(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
+	var r = m.Called(statement, arguments)
+
+	return r.Bool(0), r.Error(1)
+}
+
+// QuerySliceMap implements Session.
+func (m SessionMock) QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
+	var r = m.Called(statement, arguments)
+
+	return r.Get(0).([]map[string]interface{}), r.Error(1)
+}
+
+// Tables implements Session.
+func (m SessionMock) Tables(keyspace string) ([]string, error) {
+	var r = m.Called(keyspace)
+
+	return r.Get(0).([]string), r.Error(1)
 }
 
 type session struct {

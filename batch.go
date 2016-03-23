@@ -1,6 +1,9 @@
 package gockle
 
-import "github.com/gocql/gocql"
+import (
+	"github.com/gocql/gocql"
+	"github.com/maraino/go-mock"
+)
 
 // Batch is a batch of queries.
 type Batch interface {
@@ -21,7 +24,10 @@ type Batch interface {
 	Query(statement string, arguments ...interface{})
 }
 
-var _ Batch = &batch{}
+var (
+	_ Batch = BatchMock{}
+	_ Batch = &batch{}
+)
 
 // BatchKind matches gocql.BatchType.
 type BatchKind byte
@@ -32,6 +38,35 @@ const (
 	BatchLogged   BatchKind = 0
 	BatchUnlogged BatchKind = 1
 )
+
+// BatchMock is a mock Batch.
+type BatchMock struct {
+	mock.Mock
+}
+
+// Execute implements Batch.
+func (m BatchMock) Execute() error {
+	return m.Called().Error(0)
+}
+
+// ExecuteTransaction implements Batch.
+func (m BatchMock) ExecuteTransaction(results ...interface{}) (bool, Iterator, error) {
+	var r = m.Called(results)
+
+	return r.Bool(0), r.Get(1).(Iterator), r.Error(2)
+}
+
+// ExecuteTransactionMap implements Batch.
+func (m BatchMock) ExecuteTransactionMap(results map[string]interface{}) (bool, Iterator, error) {
+	var r = m.Called(results)
+
+	return r.Bool(0), r.Get(1).(Iterator), r.Error(2)
+}
+
+// Query implements Batch.
+func (m BatchMock) Query(statement string, arguments ...interface{}) {
+	m.Called(statement, arguments)
+}
 
 type batch struct {
 	b *gocql.Batch
