@@ -4,16 +4,10 @@
 
 **Gockle simplifies and mocks [gocql](https://github.com/gocql/gocql).** Use it if you don't need to customize batches or queries.
 
-[![GoDoc Widget]][GoDoc] [![Travis Widget]][Travis] [![GoReportCard Widget]][GoReportCard] [![Coverage Status Widget]][Coverage Status]
-
-[GoDoc]: https://godoc.org/github.com/willfaught/gockle
-[GoDoc Widget]: https://godoc.org/github.com/willfaught/gockle?status.svg
-[Travis]: https://travis-ci.org/willfaught/gockle
-[Travis Widget]: https://travis-ci.org/willfaught/gockle.svg?branch=master
-[GoReportCard]: https://goreportcard.com/report/github.com/willfaught/gockle
-[GoReportCard Widget]: https://goreportcard.com/badge/github.com/willfaught/gockle
-[Coverage Status]: https://coveralls.io/r/willfaught/gockle?branch=master
-[Coverage Status Widget]: https://coveralls.io/repos/willfaught/gockle/badge.svg?branch=master
+[![Documentation](https://godoc.org/github.com/willfaught/gockle?status.svg)](https://godoc.org/github.com/willfaught/gockle)
+[![Build](https://travis-ci.org/willfaught/gockle.svg?branch=master)](https://travis-ci.org/willfaught/gockle)
+[![Report](https://goreportcard.com/badge/github.com/willfaught/gockle)](https://goreportcard.com/report/github.com/willfaught/gockle)
+[![Test Coverage](https://coveralls.io/repos/github/willfaught/gockle/badge.svg?branch=master)](https://coveralls.io/github/willfaught/gockle?branch=master)
 
 ## Overview
 
