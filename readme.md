@@ -12,8 +12,8 @@
 [Travis Widget]: https://travis-ci.org/willfaught/gockle.svg?branch=master
 [GoReportCard]: https://goreportcard.com/report/github.com/willfaught/gockle
 [GoReportCard Widget]: https://goreportcard.com/badge/github.com/willfaught/gockle
-[Coverage Status]: https://coveralls.io/r/willfaught/gockle
-[Coverage Status Widget]: https://coveralls.io/repos/willfaught/gockle/badge.svg
+[Coverage Status]: https://coveralls.io/r/willfaught/gockle?branch=master
+[Coverage Status Widget]: https://coveralls.io/repos/willfaught/gockle/badge.svg?branch=master
 
 ## Overview
 
