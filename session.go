@@ -95,7 +95,7 @@ func (m SessionMock) QueryScanMap(statement string, arguments []interface{}, res
 
 // QueryScanMapTransaction implements Session.
 func (m SessionMock) QueryScanMapTransaction(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
-	var r = m.Called(statement, arguments)
+	var r = m.Called(statement, arguments, results)
 
 	return r.Bool(0), r.Error(1)
 }
