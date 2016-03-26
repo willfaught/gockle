@@ -9,6 +9,16 @@ import (
 	"github.com/maraino/go-mock"
 )
 
+func TestNewSession(t *testing.T) {
+	for _, test := range []*gocql.Session{} {
+		var a = NewSession(test)
+
+		if e := (session{s: test}); a != e {
+			t.Errorf("Actual %v, expected %v", a, e)
+		}
+	}
+}
+
 func TestSessionMock(t *testing.T) {
 	var m, e = &SessionMock{}, fmt.Errorf("e")
 
