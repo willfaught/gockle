@@ -26,7 +26,7 @@ type Batch interface {
 
 var (
 	_ Batch = BatchMock{}
-	_ Batch = &batch{}
+	_ Batch = batch{}
 )
 
 // BatchKind matches gocql.BatchType.
@@ -74,15 +74,12 @@ type batch struct {
 	s *gocql.Session
 }
 
-func (b *batch) Execute() error {
-	var gb, gs = b.clear()
-
-	return gs.ExecuteBatch(gb)
+func (b batch) Execute() error {
+	return b.s.ExecuteBatch(b.b)
 }
 
-func (b *batch) ExecuteTransaction(results ...interface{}) (bool, Iterator, error) {
-	var gb, gs = b.clear()
-	var a, i, err = gs.ExecuteBatchCAS(gb, results...)
+func (b batch) ExecuteTransaction(results ...interface{}) (bool, Iterator, error) {
+	var a, i, err = b.s.ExecuteBatchCAS(b.b, results...)
 
 	if err != nil {
 		return false, nil, err
@@ -91,9 +88,8 @@ func (b *batch) ExecuteTransaction(results ...interface{}) (bool, Iterator, erro
 	return a, iterator{i: i}, nil
 }
 
-func (b *batch) ExecuteTransactionMap(results map[string]interface{}) (bool, Iterator, error) {
-	var gb, gs = b.clear()
-	var a, i, err = gs.MapExecuteBatchCAS(gb, results)
+func (b batch) ExecuteTransactionMap(results map[string]interface{}) (bool, Iterator, error) {
+	var a, i, err = b.s.MapExecuteBatchCAS(b.b, results)
 
 	if err != nil {
 		return false, nil, err
@@ -104,13 +100,4 @@ func (b *batch) ExecuteTransactionMap(results map[string]interface{}) (bool, Ite
 
 func (b batch) Query(statement string, arguments ...interface{}) {
 	b.b.Query(statement, arguments...)
-}
-
-func (b *batch) clear() (*gocql.Batch, *gocql.Session) {
-	var gb, gs = b.b, b.s
-
-	b.b = nil
-	b.s = nil
-
-	return gb, gs
 }

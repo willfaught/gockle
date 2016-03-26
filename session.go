@@ -145,7 +145,7 @@ func (s session) Columns(keyspace, table string) (map[string]gocql.TypeInfo, err
 }
 
 func (s session) QueryBatch(kind BatchKind) Batch {
-	return &batch{b: s.s.NewBatch(gocql.BatchType(kind)), s: s.s}
+	return batch{b: s.s.NewBatch(gocql.BatchType(kind)), s: s.s}
 }
 
 func (s session) QueryExecute(statement string, arguments ...interface{}) error {
