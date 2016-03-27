@@ -132,7 +132,7 @@ func (s session) Columns(keyspace, table string) (map[string]gocql.TypeInfo, err
 	var t, ok = m.Tables[table]
 
 	if !ok {
-		return nil, fmt.Errorf("table %v.%v invalid", keyspace, table)
+		return nil, fmt.Errorf("gockle: table %v.%v invalid", keyspace, table)
 	}
 
 	var types = map[string]gocql.TypeInfo{}
