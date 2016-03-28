@@ -110,8 +110,8 @@ func TestSessionMock(t *testing.T) {
 		{"QueryBatch", []interface{}{BatchKind(1)}, []interface{}{&batch{}}},
 		{"QueryExec", []interface{}{"", []interface{}(nil)}, []interface{}{nil}},
 		{"QueryExec", []interface{}{"a", []interface{}{1}}, []interface{}{e}},
-		{"QueryIterate", []interface{}{"", []interface{}(nil)}, []interface{}{(*iterator)(nil)}},
-		{"QueryIterate", []interface{}{"a", []interface{}{1}}, []interface{}{iterator{}}},
+		{"QueryIterator", []interface{}{"", []interface{}(nil)}, []interface{}{(*iterator)(nil)}},
+		{"QueryIterator", []interface{}{"a", []interface{}{1}}, []interface{}{iterator{}}},
 		{"QueryScan", []interface{}{"", []interface{}(nil), []interface{}(nil)}, []interface{}{nil}},
 		{"QueryScan", []interface{}{"a", []interface{}{1}, []interface{}{1}}, []interface{}{e}},
 		{"QueryScanMap", []interface{}{"", []interface{}(nil), map[string]interface{}(nil)}, []interface{}{nil}},
@@ -144,8 +144,8 @@ func TestSessionQuery(t *testing.T) {
 		t.Error("Actual batch nil, expected not nil")
 	}
 
-	// QueryIterate
-	if s.QueryIterate("select * from gockle_test.test") == nil {
+	// QueryIterator
+	if s.QueryIterator("select * from gockle_test.test") == nil {
 		t.Error("Actual iterator nil, expected not nil")
 	}
 

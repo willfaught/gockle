@@ -22,9 +22,9 @@ type Session interface {
 	// QueryExec runs statement with arguments.
 	QueryExec(statement string, arguments ...interface{}) error
 
-	// QueryIterate runs statement with arguments and returns an Iterator for
+	// QueryIterator runs statement with arguments and returns an Iterator for
 	// the results.
-	QueryIterate(statement string, arguments ...interface{}) Iterator
+	QueryIterator(statement string, arguments ...interface{}) Iterator
 
 	// QueryScan runs statement with arguments.
 	QueryScan(statement string, arguments, results []interface{}) error
@@ -80,8 +80,8 @@ func (m SessionMock) QueryExec(statement string, arguments ...interface{}) error
 	return m.Called(statement, arguments).Error(0)
 }
 
-// QueryIterate implements Session.
-func (m SessionMock) QueryIterate(statement string, arguments ...interface{}) Iterator {
+// QueryIterator implements Session.
+func (m SessionMock) QueryIterator(statement string, arguments ...interface{}) Iterator {
 	return m.Called(statement, arguments).Get(0).(Iterator)
 }
 
@@ -154,7 +154,7 @@ func (s session) QueryExec(statement string, arguments ...interface{}) error {
 	return s.s.Query(statement, arguments...).Exec()
 }
 
-func (s session) QueryIterate(statement string, arguments ...interface{}) Iterator {
+func (s session) QueryIterator(statement string, arguments ...interface{}) Iterator {
 	return iterator{i: s.s.Query(statement, arguments...).Iter()}
 }
 

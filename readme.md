@@ -49,7 +49,7 @@ Some `gocql.Iter` methods have counterparts in `Iterator`:
 
 The rest:
 
-- `Session.QueryIterate` returns an `Iterator` to iterate rows
+- `Session.QueryIterator` returns an `Iterator` to iterate rows
 - `Session.Tables` returns the table names of a keyspace
 - `Session.Columns` returns the column names and types of a table
 
@@ -66,7 +66,7 @@ Insert a row:
 Print all rows:
 
     var s = NewSession(...)
-    var i = s.QueryIterate("select * from users")
+    var i = s.QueryIterator("select * from users")
 
     for done := false; !done; {
         var m = map[string]interface{}{}
