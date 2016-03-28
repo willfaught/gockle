@@ -116,8 +116,8 @@ func TestSessionMock(t *testing.T) {
 		{"QueryScan", []interface{}{"a", []interface{}{1}, []interface{}{1}}, []interface{}{e}},
 		{"QueryScanMap", []interface{}{"", []interface{}(nil), map[string]interface{}(nil)}, []interface{}{nil}},
 		{"QueryScanMap", []interface{}{"a", []interface{}{1}, map[string]interface{}{"b": 2}}, []interface{}{e}},
-		{"QueryScanMapTransaction", []interface{}{"", []interface{}(nil), map[string]interface{}(nil)}, []interface{}{false, nil}},
-		{"QueryScanMapTransaction", []interface{}{"a", []interface{}{1}, map[string]interface{}{"b": 2}}, []interface{}{true, e}},
+		{"QueryScanMapTx", []interface{}{"", []interface{}(nil), map[string]interface{}(nil)}, []interface{}{false, nil}},
+		{"QueryScanMapTx", []interface{}{"a", []interface{}{1}, map[string]interface{}{"b": 2}}, []interface{}{true, e}},
 		{"QuerySliceMap", []interface{}{"", []interface{}(nil)}, []interface{}{[]map[string]interface{}(nil), nil}},
 		{"QuerySliceMap", []interface{}{"a", []interface{}{1}}, []interface{}{[]map[string]interface{}{{"b": 2}}, e}},
 		{"Tables", []interface{}{""}, []interface{}{[]string(nil), nil}},
@@ -175,10 +175,10 @@ func TestSessionQuery(t *testing.T) {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
 
-	// QueryScanMapTransaction
+	// QueryScanMapTx
 	am = map[string]interface{}{}
 
-	if b, err := s.QueryScanMapTransaction("update gockle_test.test set n = 3 where id = 1 if n = 2", nil, am); err == nil {
+	if b, err := s.QueryScanMapTx("update gockle_test.test set n = 3 where id = 1 if n = 2", nil, am); err == nil {
 		if !b {
 			t.Error("Actual applied false, expected true")
 		}

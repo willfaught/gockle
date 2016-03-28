@@ -26,8 +26,8 @@ A `gocql.Batch` method has a counterpart in `Batch`:
 Some `gocql.Session` methods have counterparts in `Batch`:
 
 - `gocql.Session.ExecuteBatch`: `Batch.Execute`
-- `gocql.Session.ExecuteBatchCAS`: `Batch.ExecuteTransaction`
-- `gocql.Session.MapExecuteBatchCAS`: `Batch.ExecuteTransactionMap`
+- `gocql.Session.ExecuteBatchCAS`: `Batch.ExecuteTx`
+- `gocql.Session.MapExecuteBatchCAS`: `Batch.ExecuteTxMap`
 
 Some `gocql.Session` methods have counterparts in `Session`:
 
@@ -38,7 +38,7 @@ Some `gocql.Query` methods have counterparts in `Session`:
 
 - `gocql.Query.Exec`: `Session.QueryExecute`
 - `gocql.Query.MapScan`: `Session.QueryScanMap`
-- `gocql.Query.MapScanCAS`: `Session.QueryScanMapTransaction`
+- `gocql.Query.MapScanCAS`: `Session.QueryScanMapTx`
 - `gocql.Query.Scan`: `Session.QueryScan`
 
 Some `gocql.Iter` methods have counterparts in `Iterator`:

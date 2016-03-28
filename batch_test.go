@@ -32,13 +32,13 @@ func TestBatch(t *testing.T) {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
 
-	// ExecuteTransaction
+	// ExecuteTx
 	b = s.QueryBatch(BatchKind(0))
 	b.Query("update gockle_test.test set n = 4 where id = 1 if n = 3")
 
 	var id, n int
 
-	if b, i, err := b.ExecuteTransaction(&id, &n); err == nil {
+	if b, i, err := b.ExecuteTx(&id, &n); err == nil {
 		if id != 0 {
 			t.Errorf("Actual id %v, expected 0", id)
 		}
@@ -62,13 +62,13 @@ func TestBatch(t *testing.T) {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
 
-	// ExecuteTransactionMap
+	// ExecuteTxMap
 	b = s.QueryBatch(BatchKind(0))
 	b.Query("update gockle_test.test set n = 5 where id = 1 if n = 4")
 
 	var m = map[string]interface{}{}
 
-	if b, i, err := b.ExecuteTransactionMap(m); err == nil {
+	if b, i, err := b.ExecuteTxMap(m); err == nil {
 		if l := len(m); l > 0 {
 			t.Errorf("Actual length %v, expected 0", l)
 		}
@@ -104,9 +104,9 @@ func TestBatchMock(t *testing.T) {
 	}{
 		{"Execute", nil, []interface{}{nil}},
 		{"Execute", nil, []interface{}{e}},
-		{"ExecuteTransaction", []interface{}{[]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
-		{"ExecuteTransaction", []interface{}{[]interface{}{1}}, []interface{}{true, &iterator{}, e}},
-		{"ExecuteTransactionMap", []interface{}{map[string]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
-		{"ExecuteTransactionMap", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{true, &iterator{}, e}},
+		{"ExecuteTx", []interface{}{[]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
+		{"ExecuteTx", []interface{}{[]interface{}{1}}, []interface{}{true, &iterator{}, e}},
+		{"ExecuteTxMap", []interface{}{map[string]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
+		{"ExecuteTxMap", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{true, &iterator{}, e}},
 	})
 }

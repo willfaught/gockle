@@ -10,15 +10,15 @@ type Batch interface {
 	// Execute executes each query in order.
 	Execute() error
 
-	// ExecuteTransaction executes each query in order. It puts the first
+	// ExecuteTx executes each query in order. It puts the first
 	// result row in results. If successful, it returns true and an Iterator
 	// that ranges over the conditional statement results.
-	ExecuteTransaction(results ...interface{}) (bool, Iterator, error)
+	ExecuteTx(results ...interface{}) (bool, Iterator, error)
 
-	// ExecuteTransactionMap executes each query in order. It puts the first
+	// ExecuteTxMap executes each query in order. It puts the first
 	// result row in results. If successful, it returns true and an Iterator
 	// that ranges over the conditional statement results.
-	ExecuteTransactionMap(results map[string]interface{}) (bool, Iterator, error)
+	ExecuteTxMap(results map[string]interface{}) (bool, Iterator, error)
 
 	// Query adds the query for statement and arguments.
 	Query(statement string, arguments ...interface{})
@@ -49,15 +49,15 @@ func (m BatchMock) Execute() error {
 	return m.Called().Error(0)
 }
 
-// ExecuteTransaction implements Batch.
-func (m BatchMock) ExecuteTransaction(results ...interface{}) (bool, Iterator, error) {
+// ExecuteTx implements Batch.
+func (m BatchMock) ExecuteTx(results ...interface{}) (bool, Iterator, error) {
 	var r = m.Called(results)
 
 	return r.Bool(0), r.Get(1).(Iterator), r.Error(2)
 }
 
-// ExecuteTransactionMap implements Batch.
-func (m BatchMock) ExecuteTransactionMap(results map[string]interface{}) (bool, Iterator, error) {
+// ExecuteTxMap implements Batch.
+func (m BatchMock) ExecuteTxMap(results map[string]interface{}) (bool, Iterator, error) {
 	var r = m.Called(results)
 
 	return r.Bool(0), r.Get(1).(Iterator), r.Error(2)
@@ -78,7 +78,7 @@ func (b batch) Execute() error {
 	return b.s.ExecuteBatch(b.b)
 }
 
-func (b batch) ExecuteTransaction(results ...interface{}) (bool, Iterator, error) {
+func (b batch) ExecuteTx(results ...interface{}) (bool, Iterator, error) {
 	var a, i, err = b.s.ExecuteBatchCAS(b.b, results...)
 
 	if err != nil {
@@ -88,7 +88,7 @@ func (b batch) ExecuteTransaction(results ...interface{}) (bool, Iterator, error
 	return a, iterator{i: i}, nil
 }
 
-func (b batch) ExecuteTransactionMap(results map[string]interface{}) (bool, Iterator, error) {
+func (b batch) ExecuteTxMap(results map[string]interface{}) (bool, Iterator, error) {
 	var a, i, err = b.s.MapExecuteBatchCAS(b.b, results)
 
 	if err != nil {

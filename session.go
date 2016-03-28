@@ -33,10 +33,10 @@ type Session interface {
 	// in results.
 	QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
 
-	// QueryScanMapTransaction runs statement with arguments as a lightweight
+	// QueryScanMapTx runs statement with arguments as a lightweight
 	// transaction and puts the first result row in results. It returns whether
 	// the transaction succeeded. If not, it puts the old values in results.
-	QueryScanMapTransaction(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
+	QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
 	// QuerySliceMap runs statement with arguments and returns all result rows.
 	QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
@@ -95,8 +95,8 @@ func (m SessionMock) QueryScanMap(statement string, arguments []interface{}, res
 	return m.Called(statement, arguments, results).Error(0)
 }
 
-// QueryScanMapTransaction implements Session.
-func (m SessionMock) QueryScanMapTransaction(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
+// QueryScanMapTx implements Session.
+func (m SessionMock) QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
 	var r = m.Called(statement, arguments, results)
 
 	return r.Bool(0), r.Error(1)
@@ -166,7 +166,7 @@ func (s session) QueryScanMap(statement string, arguments []interface{}, results
 	return s.s.Query(statement, arguments...).MapScan(results)
 }
 
-func (s session) QueryScanMapTransaction(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
+func (s session) QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
 	return s.s.Query(statement, arguments...).MapScanCAS(results)
 }
 
