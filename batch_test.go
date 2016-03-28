@@ -9,7 +9,7 @@ func TestBatch(t *testing.T) {
 	var s = newSession(t)
 
 	var exec = func(q string) {
-		if err := s.QueryExecute(q); err != nil {
+		if err := s.QueryExec(q); err != nil {
 			t.Errorf("Actual error %v, expected no error", err)
 		}
 	}
@@ -19,7 +19,7 @@ func TestBatch(t *testing.T) {
 	exec(tabCreate)
 	exec(rowInsert)
 
-	// Execute
+	// Exec
 	var b = s.QueryBatch(BatchKind(0))
 
 	if b == nil {
@@ -28,17 +28,17 @@ func TestBatch(t *testing.T) {
 
 	b.Query("update gockle_test.test set n = 3 where id = 1 if n = 2")
 
-	if err := b.Execute(); err != nil {
+	if err := b.Exec(); err != nil {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
 
-	// ExecuteTx
+	// ExecTx
 	b = s.QueryBatch(BatchKind(0))
 	b.Query("update gockle_test.test set n = 4 where id = 1 if n = 3")
 
 	var id, n int
 
-	if b, i, err := b.ExecuteTx(&id, &n); err == nil {
+	if b, i, err := b.ExecTx(&id, &n); err == nil {
 		if id != 0 {
 			t.Errorf("Actual id %v, expected 0", id)
 		}
@@ -62,13 +62,13 @@ func TestBatch(t *testing.T) {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
 
-	// ExecuteTxMap
+	// ExecTxMap
 	b = s.QueryBatch(BatchKind(0))
 	b.Query("update gockle_test.test set n = 5 where id = 1 if n = 4")
 
 	var m = map[string]interface{}{}
 
-	if b, i, err := b.ExecuteTxMap(m); err == nil {
+	if b, i, err := b.ExecTxMap(m); err == nil {
 		if l := len(m); l > 0 {
 			t.Errorf("Actual length %v, expected 0", l)
 		}
@@ -102,11 +102,11 @@ func TestBatchMock(t *testing.T) {
 		arguments []interface{}
 		results   []interface{}
 	}{
-		{"Execute", nil, []interface{}{nil}},
-		{"Execute", nil, []interface{}{e}},
-		{"ExecuteTx", []interface{}{[]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
-		{"ExecuteTx", []interface{}{[]interface{}{1}}, []interface{}{true, &iterator{}, e}},
-		{"ExecuteTxMap", []interface{}{map[string]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
-		{"ExecuteTxMap", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{true, &iterator{}, e}},
+		{"Exec", nil, []interface{}{nil}},
+		{"Exec", nil, []interface{}{e}},
+		{"ExecTx", []interface{}{[]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
+		{"ExecTx", []interface{}{[]interface{}{1}}, []interface{}{true, &iterator{}, e}},
+		{"ExecTxMap", []interface{}{map[string]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
+		{"ExecTxMap", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{true, &iterator{}, e}},
 	})
 }

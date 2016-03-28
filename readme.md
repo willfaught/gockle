@@ -25,9 +25,9 @@ A `gocql.Batch` method has a counterpart in `Batch`:
 
 Some `gocql.Session` methods have counterparts in `Batch`:
 
-- `gocql.Session.ExecuteBatch`: `Batch.Execute`
-- `gocql.Session.ExecuteBatchCAS`: `Batch.ExecuteTx`
-- `gocql.Session.MapExecuteBatchCAS`: `Batch.ExecuteTxMap`
+- `gocql.Session.ExecuteBatch`: `Batch.Exec`
+- `gocql.Session.ExecuteBatchCAS`: `Batch.ExecTx`
+- `gocql.Session.MapExecuteBatchCAS`: `Batch.ExecTxMap`
 
 Some `gocql.Session` methods have counterparts in `Session`:
 
@@ -36,7 +36,7 @@ Some `gocql.Session` methods have counterparts in `Session`:
 
 Some `gocql.Query` methods have counterparts in `Session`:
 
-- `gocql.Query.Exec`: `Session.QueryExecute`
+- `gocql.Query.Exec`: `Session.QueryExec`
 - `gocql.Query.MapScan`: `Session.QueryScanMap`
 - `gocql.Query.MapScanCAS`: `Session.QueryScanMapTx`
 - `gocql.Query.Scan`: `Session.QueryScan`
@@ -59,7 +59,7 @@ Insert a row:
 
     var s = NewSession(...)
 
-    if err := s.QueryExecute("insert into users (id, name) values (123, 'me')"); err != nil {
+    if err := s.QueryExec("insert into users (id, name) values (123, 'me')"); err != nil {
         return err
     }
 

@@ -19,8 +19,8 @@ type Session interface {
 	// QueryBatch returns a Batch with type kind for batched queries.
 	QueryBatch(kind BatchKind) Batch
 
-	// QueryExecute runs statement with arguments.
-	QueryExecute(statement string, arguments ...interface{}) error
+	// QueryExec runs statement with arguments.
+	QueryExec(statement string, arguments ...interface{}) error
 
 	// QueryIterate runs statement with arguments and returns an Iterator for
 	// the results.
@@ -33,9 +33,9 @@ type Session interface {
 	// in results.
 	QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
 
-	// QueryScanMapTx runs statement with arguments as a lightweight
-	// transaction and puts the first result row in results. It returns whether
-	// the transaction succeeded. If not, it puts the old values in results.
+	// QueryScanMapTx runs statement with arguments as a lightweight transaction and
+	// puts the first result row in results. It returns whether the transaction
+	// succeeded. If not, it puts the old values in results.
 	QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
 	// QuerySliceMap runs statement with arguments and returns all result rows.
@@ -75,8 +75,8 @@ func (m SessionMock) QueryBatch(kind BatchKind) Batch {
 	return m.Called(kind).Get(0).(Batch)
 }
 
-// QueryExecute implements Session.
-func (m SessionMock) QueryExecute(statement string, arguments ...interface{}) error {
+// QueryExec implements Session.
+func (m SessionMock) QueryExec(statement string, arguments ...interface{}) error {
 	return m.Called(statement, arguments).Error(0)
 }
 
@@ -150,7 +150,7 @@ func (s session) QueryBatch(kind BatchKind) Batch {
 	return batch{b: s.s.NewBatch(gocql.BatchType(kind)), s: s.s}
 }
 
-func (s session) QueryExecute(statement string, arguments ...interface{}) error {
+func (s session) QueryExec(statement string, arguments ...interface{}) error {
 	return s.s.Query(statement, arguments...).Exec()
 }
 

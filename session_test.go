@@ -48,7 +48,7 @@ func TestNewSession(t *testing.T) {
 
 func TestSessionMetadata(t *testing.T) {
 	var exec = func(s Session, q string) {
-		if err := s.QueryExecute(q); err != nil {
+		if err := s.QueryExec(q); err != nil {
 			t.Errorf("Actual error %v, expected no error", err)
 		}
 	}
@@ -108,8 +108,8 @@ func TestSessionMock(t *testing.T) {
 		{"Columns", []interface{}{"a", "b"}, []interface{}{map[string]gocql.TypeInfo{"c": gocql.NativeType{}}, e}},
 		{"QueryBatch", []interface{}{BatchKind(0)}, []interface{}{(*batch)(nil)}},
 		{"QueryBatch", []interface{}{BatchKind(1)}, []interface{}{&batch{}}},
-		{"QueryExecute", []interface{}{"", []interface{}(nil)}, []interface{}{nil}},
-		{"QueryExecute", []interface{}{"a", []interface{}{1}}, []interface{}{e}},
+		{"QueryExec", []interface{}{"", []interface{}(nil)}, []interface{}{nil}},
+		{"QueryExec", []interface{}{"a", []interface{}{1}}, []interface{}{e}},
 		{"QueryIterate", []interface{}{"", []interface{}(nil)}, []interface{}{(*iterator)(nil)}},
 		{"QueryIterate", []interface{}{"a", []interface{}{1}}, []interface{}{iterator{}}},
 		{"QueryScan", []interface{}{"", []interface{}(nil), []interface{}(nil)}, []interface{}{nil}},
@@ -129,7 +129,7 @@ func TestSessionQuery(t *testing.T) {
 	var s = newSession(t)
 
 	var exec = func(q string) {
-		if err := s.QueryExecute(q); err != nil {
+		if err := s.QueryExec(q); err != nil {
 			t.Errorf("Actual error %v, expected no error", err)
 		}
 	}

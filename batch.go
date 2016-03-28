@@ -7,18 +7,18 @@ import (
 
 // Batch is a batch of queries.
 type Batch interface {
-	// Execute executes each query in order.
-	Execute() error
+	// Exec executes each query in order.
+	Exec() error
 
-	// ExecuteTx executes each query in order. It puts the first
-	// result row in results. If successful, it returns true and an Iterator
-	// that ranges over the conditional statement results.
-	ExecuteTx(results ...interface{}) (bool, Iterator, error)
+	// ExecTx executes each query in order. It puts the first result row in results.
+	// If successful, it returns true and an Iterator that ranges over the
+	// conditional statement results.
+	ExecTx(results ...interface{}) (bool, Iterator, error)
 
-	// ExecuteTxMap executes each query in order. It puts the first
-	// result row in results. If successful, it returns true and an Iterator
-	// that ranges over the conditional statement results.
-	ExecuteTxMap(results map[string]interface{}) (bool, Iterator, error)
+	// ExecTxMap executes each query in order. It puts the first result row in
+	// results. If successful, it returns true and an Iterator that ranges over the
+	// conditional statement results.
+	ExecTxMap(results map[string]interface{}) (bool, Iterator, error)
 
 	// Query adds the query for statement and arguments.
 	Query(statement string, arguments ...interface{})
@@ -44,20 +44,20 @@ type BatchMock struct {
 	mock.Mock
 }
 
-// Execute implements Batch.
-func (m BatchMock) Execute() error {
+// Exec implements Batch.
+func (m BatchMock) Exec() error {
 	return m.Called().Error(0)
 }
 
-// ExecuteTx implements Batch.
-func (m BatchMock) ExecuteTx(results ...interface{}) (bool, Iterator, error) {
+// ExecTx implements Batch.
+func (m BatchMock) ExecTx(results ...interface{}) (bool, Iterator, error) {
 	var r = m.Called(results)
 
 	return r.Bool(0), r.Get(1).(Iterator), r.Error(2)
 }
 
-// ExecuteTxMap implements Batch.
-func (m BatchMock) ExecuteTxMap(results map[string]interface{}) (bool, Iterator, error) {
+// ExecTxMap implements Batch.
+func (m BatchMock) ExecTxMap(results map[string]interface{}) (bool, Iterator, error) {
 	var r = m.Called(results)
 
 	return r.Bool(0), r.Get(1).(Iterator), r.Error(2)
@@ -74,11 +74,11 @@ type batch struct {
 	s *gocql.Session
 }
 
-func (b batch) Execute() error {
+func (b batch) Exec() error {
 	return b.s.ExecuteBatch(b.b)
 }
 
-func (b batch) ExecuteTx(results ...interface{}) (bool, Iterator, error) {
+func (b batch) ExecTx(results ...interface{}) (bool, Iterator, error) {
 	var a, i, err = b.s.ExecuteBatchCAS(b.b, results...)
 
 	if err != nil {
@@ -88,7 +88,7 @@ func (b batch) ExecuteTx(results ...interface{}) (bool, Iterator, error) {
 	return a, iterator{i: i}, nil
 }
 
-func (b batch) ExecuteTxMap(results map[string]interface{}) (bool, Iterator, error) {
+func (b batch) ExecTxMap(results map[string]interface{}) (bool, Iterator, error) {
 	var a, i, err = b.s.MapExecuteBatchCAS(b.b, results)
 
 	if err != nil {
