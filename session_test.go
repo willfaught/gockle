@@ -130,7 +130,7 @@ func TestSessionQuery(t *testing.T) {
 
 	var exec = func(q string) {
 		if err := s.QueryExecute(q); err != nil {
-			t.Fatalf("Actual error %v, expected no error", err)
+			t.Errorf("Actual error %v, expected no error", err)
 		}
 	}
 
