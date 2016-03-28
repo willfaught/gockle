@@ -13,6 +13,7 @@ type Session interface {
 	Close()
 
 	// Columns returns a map from column names to types for keyspace and table.
+	// Schema changes during a session are not reflected.
 	Columns(keyspace, table string) (map[string]gocql.TypeInfo, error)
 
 	// QueryBatch returns a Batch with type kind for batched queries.
@@ -40,7 +41,8 @@ type Session interface {
 	// QuerySliceMap runs statement with arguments and returns all result rows.
 	QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
 
-	// Tables returns the table names for keyspace.
+	// Tables returns the table names for keyspace. Schema changes during a session
+	// are not reflected. Invalid keyspace names are not errors.
 	Tables(keyspace string) ([]string, error)
 }
 
@@ -119,7 +121,7 @@ type session struct {
 }
 
 func (s session) Close() {
-	s.Close()
+	s.s.Close()
 }
 
 func (s session) Columns(keyspace, table string) (map[string]gocql.TypeInfo, error) {
