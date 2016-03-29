@@ -111,5 +111,7 @@ func TestBatchMock(t *testing.T) {
 		{"ExecTx", []interface{}{[]interface{}{1}}, []interface{}{true, &iterator{}, e}},
 		{"ExecTxMap", []interface{}{map[string]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
 		{"ExecTxMap", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{true, &iterator{}, e}},
+		{"Query", []interface{}{"", []interface{}(nil)}, nil},
+		{"Query", []interface{}{"a", []interface{}{1}}, nil},
 	})
 }
