@@ -55,8 +55,6 @@ func TestSessionMetadata(t *testing.T) {
 
 	var s = newSession(t)
 
-	defer s.Close()
-
 	exec(s, ksDropIf)
 	exec(s, ksCreate)
 
@@ -102,6 +100,16 @@ func TestSessionMetadata(t *testing.T) {
 		}
 	} else {
 		t.Fatalf("Actual error %v, expected no error", err)
+	}
+
+	if _, err := s.Columns("gockle_test", "invalid"); err == nil {
+		t.Error("Actual no error, expected error")
+	}
+
+	s.Close()
+
+	if _, err := s.Columns("gockle_test", "test"); err == nil {
+		t.Error("Actual no error, expected error")
 	}
 }
 
