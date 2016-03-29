@@ -76,6 +76,14 @@ func TestSessionMetadata(t *testing.T) {
 		t.Fatalf("Actual error %v, expected no error", err)
 	}
 
+	s.Close()
+
+	if _, err := s.Tables("gockle_test"); err == nil {
+		t.Errorf("Actual no error, expected error")
+	}
+
+	s = newSession(t)
+
 	if a, err := s.Columns("gockle_test", "test"); err == nil {
 		var ts = map[string]gocql.Type{"id": gocql.TypeInt, "n": gocql.TypeInt}
 
