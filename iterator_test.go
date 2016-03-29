@@ -2,6 +2,7 @@ package gockle
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -28,7 +29,7 @@ func TestIterator(t *testing.T) {
 	exec(rowInsert)
 
 	if i := s.QueryIterator("select * from gockle_test.test"); i == nil {
-		t.Fatal("Actual iterator nil, expected not nil")
+		t.Error("Actual iterator nil, expected not nil")
 	} else {
 		var id, n int
 
@@ -42,6 +43,24 @@ func TestIterator(t *testing.T) {
 
 		if n != 2 {
 			t.Errorf("Actual n %v, expected 2", n)
+		}
+
+		if err := i.Close(); err != nil {
+			t.Errorf("Actual error %v, expected no error", err)
+		}
+	}
+
+	if i := s.QueryIterator("select * from gockle_test.test"); i == nil {
+		t.Error("Actual iterator nil, expected not nil")
+	} else {
+		var a = map[string]interface{}{}
+
+		if !i.ScanMap(a) {
+			t.Errorf("Actual more false, expected true")
+		}
+
+		if e := (map[string]interface{}{"id": 1, "n": 2}); !reflect.DeepEqual(a, e) {
+			t.Errorf("Actual map %v, expected %v", a, e)
 		}
 
 		if err := i.Close(); err != nil {
