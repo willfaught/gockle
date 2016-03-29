@@ -55,9 +55,16 @@ func TestSessionMetadata(t *testing.T) {
 
 	var s = newSession(t)
 
+	defer s.Close()
+
 	exec(s, ksDropIf)
 	exec(s, ksCreate)
+
+	defer exec(s, ksDrop)
+
 	exec(s, tabCreate)
+
+	defer exec(s, tabDrop)
 
 	s = newSession(t)
 
@@ -88,11 +95,6 @@ func TestSessionMetadata(t *testing.T) {
 	} else {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
-
-	exec(s, tabDrop)
-	exec(s, ksDrop)
-
-	s.Close()
 }
 
 func TestSessionMock(t *testing.T) {
