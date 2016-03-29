@@ -27,28 +27,26 @@ func TestIterator(t *testing.T) {
 
 	exec(rowInsert)
 
-	var i = s.QueryIterator("select * from gockle_test.test")
-
-	if i == nil {
+	if i := s.QueryIterator("select * from gockle_test.test"); i == nil {
 		t.Fatal("Actual iterator nil, expected not nil")
-	}
+	} else {
+		var id, n int
 
-	var id, n int
+		if !i.Scan(&id, &n) {
+			t.Errorf("Actual more false, expected true")
+		}
 
-	if !i.Scan(&id, &n) {
-		t.Fatal("Actual more false, expected true")
-	}
+		if id != 1 {
+			t.Errorf("Actual id %v, expected 1", id)
+		}
 
-	if id != 1 {
-		t.Fatalf("Actual id %v, expected 1", id)
-	}
+		if n != 2 {
+			t.Errorf("Actual n %v, expected 2", n)
+		}
 
-	if n != 2 {
-		t.Fatalf("Actual n %v, expected 2", n)
-	}
-
-	if err := i.Close(); err != nil {
-		t.Fatalf("Actual error %v, expected no error", err)
+		if err := i.Close(); err != nil {
+			t.Errorf("Actual error %v, expected no error", err)
+		}
 	}
 }
 

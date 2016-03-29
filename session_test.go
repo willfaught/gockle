@@ -49,7 +49,7 @@ func TestNewSession(t *testing.T) {
 func TestSessionMetadata(t *testing.T) {
 	var exec = func(s Session, q string) {
 		if err := s.QueryExec(q); err != nil {
-			t.Errorf("Actual error %v, expected no error", err)
+			t.Fatalf("Actual error %v, expected no error", err)
 		}
 	}
 
@@ -70,10 +70,10 @@ func TestSessionMetadata(t *testing.T) {
 
 	if a, err := s.Tables("gockle_test"); err == nil {
 		if e := ([]string{"test"}); !reflect.DeepEqual(a, e) {
-			t.Errorf("Actual tables %v, expected %v", a, e)
+			t.Fatalf("Actual tables %v, expected %v", a, e)
 		}
 	} else {
-		t.Errorf("Actual error %v, expected no error", err)
+		t.Fatalf("Actual error %v, expected no error", err)
 	}
 
 	if a, err := s.Columns("gockle_test", "test"); err == nil {
@@ -83,17 +83,17 @@ func TestSessionMetadata(t *testing.T) {
 			for n, at := range a {
 				if et, ok := ts[n]; ok {
 					if at.Type() != et {
-						t.Errorf("Actual type %v, expected %v", at, et)
+						t.Fatalf("Actual type %v, expected %v", at, et)
 					}
 				} else {
-					t.Errorf("Actual name %v invalid, expected valid", n)
+					t.Fatalf("Actual name %v invalid, expected valid", n)
 				}
 			}
 		} else {
-			t.Errorf("Actual count %v, expected %v", la, le)
+			t.Fatalf("Actual count %v, expected %v", la, le)
 		}
 	} else {
-		t.Errorf("Actual error %v, expected no error", err)
+		t.Fatalf("Actual error %v, expected no error", err)
 	}
 }
 
@@ -130,15 +130,23 @@ func TestSessionMock(t *testing.T) {
 func TestSessionQuery(t *testing.T) {
 	var s = newSession(t)
 
+	defer s.Close()
+
 	var exec = func(q string) {
 		if err := s.QueryExec(q); err != nil {
-			t.Errorf("Actual error %v, expected no error", err)
+			t.Fatalf("Actual error %v, expected no error", err)
 		}
 	}
 
 	exec(ksDropIf)
 	exec(ksCreate)
+
+	defer exec(ksDrop)
+
 	exec(tabCreate)
+
+	defer exec(tabDrop)
+
 	exec(rowInsert)
 
 	// QueryBatch
@@ -202,11 +210,6 @@ func TestSessionQuery(t *testing.T) {
 	} else {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
-
-	exec(tabDrop)
-	exec(ksDrop)
-
-	s.Close()
 }
 
 func init() {

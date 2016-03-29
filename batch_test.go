@@ -8,15 +8,23 @@ import (
 func TestBatch(t *testing.T) {
 	var s = newSession(t)
 
+	defer s.Close()
+
 	var exec = func(q string) {
 		if err := s.QueryExec(q); err != nil {
-			t.Errorf("Actual error %v, expected no error", err)
+			t.Fatalf("Actual error %v, expected no error", err)
 		}
 	}
 
 	exec(ksDropIf)
 	exec(ksCreate)
+
+	defer exec(ksDrop)
+
 	exec(tabCreate)
+
+	defer exec(tabDrop)
+
 	exec(rowInsert)
 
 	// Exec
@@ -87,11 +95,6 @@ func TestBatch(t *testing.T) {
 	} else {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
-
-	exec(tabDrop)
-	exec(ksDrop)
-
-	s.Close()
 }
 
 func TestBatchMock(t *testing.T) {
