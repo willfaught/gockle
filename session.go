@@ -171,18 +171,7 @@ func (s session) QueryScanMapTx(statement string, arguments []interface{}, resul
 }
 
 func (s session) QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
-	var i = s.s.Query(statement, arguments...).Iter()
-	var m, err = i.SliceMap()
-
-	if err != nil {
-		return nil, err
-	}
-
-	if err := i.Close(); err != nil {
-		return nil, err
-	}
-
-	return m, nil
+	return s.s.Query(statement, arguments...).Iter().SliceMap()
 }
 
 func (s session) Tables(keyspace string) ([]string, error) {
