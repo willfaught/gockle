@@ -6,28 +6,25 @@ import (
 )
 
 func TestBatch(t *testing.T) {
-	var s = newSession(t)
-
-	defer s.Close()
+	var execs = newSession(t)
 
 	var exec = func(q string) {
-		if err := s.QueryExec(q); err != nil {
+		if err := execs.QueryExec(q); err != nil {
 			t.Fatalf("Actual error %v, expected no error", err)
 		}
 	}
 
 	exec(ksDropIf)
 	exec(ksCreate)
-
-	defer exec(ksDrop)
-
 	exec(tabCreate)
-
-	defer exec(tabDrop)
-
 	exec(rowInsert)
 
+	defer execs.Close()
+	defer exec(ksDrop)
+	defer exec(tabDrop)
+
 	// Exec
+	var s = newSession(t)
 	var b = s.QueryBatch(BatchKind(0))
 
 	if b == nil {
@@ -70,7 +67,14 @@ func TestBatch(t *testing.T) {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
 
+	s.Close()
+
+	if _, _, err := b.ExecTx(&id, &n); err == nil {
+		t.Error("Actual no error, expected error")
+	}
+
 	// ExecTxMap
+	s = newSession(t)
 	b = s.QueryBatch(BatchKind(0))
 	b.Query("update gockle_test.test set n = 5 where id = 1 if n = 4")
 
@@ -94,6 +98,12 @@ func TestBatch(t *testing.T) {
 		}
 	} else {
 		t.Errorf("Actual error %v, expected no error", err)
+	}
+
+	s.Close()
+
+	if _, _, err := b.ExecTxMap(m); err == nil {
+		t.Error("Actual no error, expected error")
 	}
 }
 
