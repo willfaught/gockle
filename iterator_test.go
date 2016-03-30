@@ -28,7 +28,7 @@ func TestIterator(t *testing.T) {
 
 	exec(rowInsert)
 
-	if i := s.Iterate("select * from gockle_test.test"); i == nil {
+	if i := s.ScanIterator("select * from gockle_test.test"); i == nil {
 		t.Error("Actual iterator nil, expected not nil")
 	} else {
 		var id, n int
@@ -50,7 +50,7 @@ func TestIterator(t *testing.T) {
 		}
 	}
 
-	if i := s.Iterate("select * from gockle_test.test"); i == nil {
+	if i := s.ScanIterator("select * from gockle_test.test"); i == nil {
 		t.Error("Actual iterator nil, expected not nil")
 	} else {
 		var a = map[string]interface{}{}

@@ -18,7 +18,7 @@ func ExampleBatch() {
 }
 
 func ExampleIterator() {
-	var i = mySession.Iterate("select * from users")
+	var i = mySession.ScanIterator("select * from users")
 
 	for done := false; !done; {
 		var m = map[string]interface{}{}
@@ -50,6 +50,6 @@ func init() {
 	i.When("Close").Return(nil)
 
 	mySession.When("Exec", mock.Any).Return(nil)
-	mySession.When("Iterate", mock.Any).Return(i)
+	mySession.When("ScanIterator", mock.Any).Return(i)
 	mySession.When("ScanMap", mock.Any).Return(map[string]interface{}{"id": 1, "name": "me"}, nil)
 }

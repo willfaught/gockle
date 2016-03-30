@@ -38,13 +38,13 @@ type Session interface {
 	// Exec executes the query for statement and arguments.
 	Exec(statement string, arguments ...interface{}) error
 
-	// Iterate executes the query for statement and arguments and returns an
-	// Iterator for the results.
-	Iterate(statement string, arguments ...interface{}) Iterator
-
 	// Scan executes the query for statement and arguments and puts the first
 	// result row in results.
 	Scan(statement string, arguments, results []interface{}) error
+
+	// ScanIterator executes the query for statement and arguments and returns an
+	// Iterator for the results.
+	ScanIterator(statement string, arguments ...interface{}) Iterator
 
 	// ScanMap executes the query for statement and arguments and puts the first
 	// result row in results.
@@ -117,14 +117,14 @@ func (m SessionMock) Exec(statement string, arguments ...interface{}) error {
 	return m.Called(statement, arguments).Error(0)
 }
 
-// Iterate implements Session.
-func (m SessionMock) Iterate(statement string, arguments ...interface{}) Iterator {
-	return m.Called(statement, arguments).Get(0).(Iterator)
-}
-
 // Scan implements Session.
 func (m SessionMock) Scan(statement string, arguments, results []interface{}) error {
 	return m.Called(statement, arguments, results).Error(0)
+}
+
+// ScanIterator implements Session.
+func (m SessionMock) ScanIterator(statement string, arguments ...interface{}) Iterator {
+	return m.Called(statement, arguments).Get(0).(Iterator)
 }
 
 // ScanMap implements Session.
@@ -191,12 +191,12 @@ func (s session) Exec(statement string, arguments ...interface{}) error {
 	return s.s.Query(statement, arguments...).Exec()
 }
 
-func (s session) Iterate(statement string, arguments ...interface{}) Iterator {
-	return iterator{i: s.s.Query(statement, arguments...).Iter()}
-}
-
 func (s session) Scan(statement string, arguments, results []interface{}) error {
 	return s.s.Query(statement, arguments...).Scan(results...)
+}
+
+func (s session) ScanIterator(statement string, arguments ...interface{}) Iterator {
+	return iterator{i: s.s.Query(statement, arguments...).Iter()}
 }
 
 func (s session) ScanMap(statement string, arguments []interface{}, results map[string]interface{}) error {

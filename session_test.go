@@ -140,10 +140,10 @@ func TestSessionMock(t *testing.T) {
 		{"Batch", []interface{}{BatchKind(1)}, []interface{}{&batch{}}},
 		{"Exec", []interface{}{"", []interface{}(nil)}, []interface{}{nil}},
 		{"Exec", []interface{}{"a", []interface{}{1}}, []interface{}{e}},
-		{"Iterate", []interface{}{"", []interface{}(nil)}, []interface{}{(*iterator)(nil)}},
-		{"Iterate", []interface{}{"a", []interface{}{1}}, []interface{}{iterator{}}},
 		{"Scan", []interface{}{"", []interface{}(nil), []interface{}(nil)}, []interface{}{nil}},
 		{"Scan", []interface{}{"a", []interface{}{1}, []interface{}{1}}, []interface{}{e}},
+		{"ScanIterator", []interface{}{"", []interface{}(nil)}, []interface{}{(*iterator)(nil)}},
+		{"ScanIterator", []interface{}{"a", []interface{}{1}}, []interface{}{iterator{}}},
 		{"ScanMap", []interface{}{"", []interface{}(nil), map[string]interface{}(nil)}, []interface{}{nil}},
 		{"ScanMap", []interface{}{"a", []interface{}{1}, map[string]interface{}{"b": 2}}, []interface{}{e}},
 		{"ScanMapTx", []interface{}{"", []interface{}(nil), map[string]interface{}(nil)}, []interface{}{false, nil}},
@@ -182,8 +182,8 @@ func TestSessionQuery(t *testing.T) {
 		t.Error("Actual batch nil, expected not nil")
 	}
 
-	// Iterate
-	if s.Iterate("select * from gockle_test.test") == nil {
+	// ScanIterator
+	if s.ScanIterator("select * from gockle_test.test") == nil {
 		t.Error("Actual iterator nil, expected not nil")
 	}
 
