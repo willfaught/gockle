@@ -1,4 +1,4 @@
-// Gockle simplifies and mocks github.com/gocql/gocql.
+// Package gockle simplifies and mocks github.com/gocql/gocql.
 //
 // Gockle provides the basic abilities to insert, query, and mutate data, as
 // well as access to basic keyspace and table metadata.
