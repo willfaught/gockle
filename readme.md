@@ -4,7 +4,3 @@
 [![Build](https://travis-ci.org/willfaught/gockle.svg?branch=master)](https://travis-ci.org/willfaught/gockle)
 [![Report](https://goreportcard.com/badge/github.com/willfaught/gockle)](https://goreportcard.com/report/github.com/willfaught/gockle)
 [![Test Coverage](https://coveralls.io/repos/github/willfaught/gockle/badge.svg?branch=master)](https://coveralls.io/github/willfaught/gockle?branch=master)
-
-*gocql: GOC-QuL*
-
-Gockle simplifies and mocks [gocql](https://github.com/gocql/gocql).
