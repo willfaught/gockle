@@ -11,8 +11,8 @@ var mySession = &SessionMock{}
 func ExampleBatch() {
 	var b = mySession.Batch(BatchLogged)
 
-	b.Query("insert into users (id, name) values (123, 'me')")
-	b.Query("insert into users (id, name) values (456, 'you')")
+	b.Add("insert into users (id, name) values (123, 'me')")
+	b.Add("insert into users (id, name) values (456, 'you')")
 
 	b.Exec()
 }

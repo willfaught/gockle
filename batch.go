@@ -7,6 +7,9 @@ import (
 
 // Batch is an ordered collection of CQL queries.
 type Batch interface {
+	// Add adds the query for statement and arguments.
+	Add(statement string, arguments ...interface{})
+
 	// Exec executes the queries in the order they were added.
 	Exec() error
 
@@ -17,9 +20,6 @@ type Batch interface {
 	// applied. If a conditional statement was not applied, the current values for
 	// the columns are put into the map.
 	ExecTx() ([]map[string]interface{}, error)
-
-	// Query adds the query for statement and arguments.
-	Query(statement string, arguments ...interface{})
 }
 
 var (
@@ -48,6 +48,11 @@ type BatchMock struct {
 	mock.Mock
 }
 
+// Add implements Batch.
+func (m BatchMock) Add(statement string, arguments ...interface{}) {
+	m.Called(statement, arguments)
+}
+
 // Exec implements Batch.
 func (m BatchMock) Exec() error {
 	return m.Called().Error(0)
@@ -60,15 +65,14 @@ func (m BatchMock) ExecTx() ([]map[string]interface{}, error) {
 	return r.Get(0).([]map[string]interface{}), r.Error(1)
 }
 
-// Query implements Batch.
-func (m BatchMock) Query(statement string, arguments ...interface{}) {
-	m.Called(statement, arguments)
-}
-
 type batch struct {
 	b *gocql.Batch
 
 	s *gocql.Session
+}
+
+func (b batch) Add(statement string, arguments ...interface{}) {
+	b.b.Query(statement, arguments...)
 }
 
 func (b batch) Exec() error {
@@ -97,8 +101,4 @@ func (b batch) ExecTx() ([]map[string]interface{}, error) {
 	s = append([]map[string]interface{}{m}, s...)
 
 	return s, nil
-}
-
-func (b batch) Query(statement string, arguments ...interface{}) {
-	b.b.Query(statement, arguments...)
 }
