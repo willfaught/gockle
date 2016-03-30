@@ -1,54 +1,17 @@
-// Package gockle simplifies and mocks gocql. Use it if you don't need to customize batches or queries.
+// Gockle simplifies and mocks github.com/gocql/gocql.
 //
-// Batch, Iterator, and Session wrap counterpart gocql types.
+// Gockle provides the basic abilities to insert, query, and mutate data, as
+// well as access to basic keyspace and table metadata.
 //
-// The entry point is NewSession. Call it with a *gocql.Session to get a Session.
+// The entry point is NewSession or NewSimpleSession. Call it to get a Session.
 //
-// A gocql.Iter method has a counterpart in Session:
+// A Session is the connection to the database and the primary means to access
+// it. It has all the query methods and the means to iterate result rows and
+// batch together mutations. The Session implementation simply wraps
+// gocql.Session and adapts a few things to have a simpler interface.
 //
-// - gocql.Iter.SliceMap: Session.QuerySliceMap
+// Closing the Session closes the underlying gocql.Session, including the one
+// passed in with NewSimpleSession.
 //
-// A gocql.Batch method has a counterpart in Batch:
-//
-// - gocql.Batch.Query: Batch.Query
-//
-// Some gocql.Session methods have counterparts in Batch:
-//
-// - gocql.Session.ExecuteBatch: Batch.Exec
-//
-// - gocql.Session.ExecuteBatchCAS: Batch.ExecTx
-//
-// - gocql.Session.MapExecuteBatchCAS: Batch.ExecTxMap
-//
-// Some gocql.Session methods have counterparts in Session:
-//
-// - gocql.Session.Close: Session.Close
-//
-// - gocql.Session.NewBatch: Session.QueryBatch
-//
-// Some gocql.Query methods have counterparts in Session:
-//
-// - gocql.Query.Exec: Session.QueryExec
-//
-// - gocql.Query.MapScan: Session.QueryScanMap
-//
-// - gocql.Query.MapScanCAS: Session.QueryScanMapTx
-//
-// - gocql.Query.Scan: Session.QueryScan
-//
-// Some gocql.Iter methods have counterparts in Iterator:
-//
-// - gocql.Iter.Close: Iterator.Close
-//
-// - gocql.Iter.Scan: Iterator.Scan
-//
-// - gocql.Iter.MapScan: Iterator.ScanMap
-//
-// The rest:
-//
-// - Session.QueryIterator returns an Iterator to iterate rows
-//
-// - Session.Tables returns the table names of a keyspace
-//
-// - Session.Columns returns the column names and types of a table
+// Mocks are provided for testing use of Batch, Iterator, and Session.
 package gockle
