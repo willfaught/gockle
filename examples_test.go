@@ -18,7 +18,7 @@ func ExampleBatch() {
 }
 
 func ExampleIterator() {
-	var i = mySession.QueryIterator("select * from users")
+	var i = mySession.Iterate("select * from users")
 
 	for done := false; !done; {
 		var m = map[string]interface{}{}
@@ -30,7 +30,7 @@ func ExampleIterator() {
 }
 
 func ExampleSession() {
-	var rows, _ = mySession.QueryScanMapSlice("select * from users")
+	var rows, _ = mySession.ScanMapSlice("select * from users")
 
 	for _, row := range rows {
 		fmt.Println(row)
@@ -49,7 +49,7 @@ func init() {
 
 	i.When("Close").Return(nil)
 
-	mySession.When("QueryExec", mock.Any).Return(nil)
-	mySession.When("QueryIterator", mock.Any).Return(i)
-	mySession.When("QueryScanMap", mock.Any).Return(map[string]interface{}{"id": 1, "name": "me"}, nil)
+	mySession.When("Exec", mock.Any).Return(nil)
+	mySession.When("Iterate", mock.Any).Return(i)
+	mySession.When("ScanMap", mock.Any).Return(map[string]interface{}{"id": 1, "name": "me"}, nil)
 }

@@ -24,6 +24,9 @@ func metadata(s *gocql.Session, keyspace string) (*gocql.KeyspaceMetadata, error
 // Session is a Cassandra connection. The Query methods run CQL queries. The
 // Columns and Tables methods provide simple metadata.
 type Session interface {
+	// Batch returns a new Batch for the Session.
+	Batch(kind BatchKind) Batch
+
 	// Close closes the Session.
 	Close()
 
@@ -32,32 +35,29 @@ type Session interface {
 	// Session to observe them.
 	Columns(keyspace, table string) (map[string]gocql.TypeInfo, error)
 
-	// Batch returns a Batch for the Session.
-	Batch(kind BatchKind) Batch
+	// Exec executes the query for statement and arguments.
+	Exec(statement string, arguments ...interface{}) error
 
-	// QueryExec executes the query for statement and arguments.
-	QueryExec(statement string, arguments ...interface{}) error
-
-	// QueryIterator executes the query for statement and arguments and returns an
+	// Iterate executes the query for statement and arguments and returns an
 	// Iterator for the results.
-	QueryIterator(statement string, arguments ...interface{}) Iterator
+	Iterate(statement string, arguments ...interface{}) Iterator
 
-	// QueryScan executes the query for statement and arguments and puts the first
+	// Scan executes the query for statement and arguments and puts the first
 	// result row in results.
-	QueryScan(statement string, arguments, results []interface{}) error
+	Scan(statement string, arguments, results []interface{}) error
 
-	// QueryScanMap executes the query for statement and arguments and puts the
-	// first result row in results.
-	QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
+	// ScanMap executes the query for statement and arguments and puts the first
+	// result row in results.
+	ScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
 
-	// QueryScanMapTx executes the query for statement and arguments as a
-	// lightweight transaction. If the query is not applied, it puts the current
-	// values for the columns in results. It returns whether the query is applied.
-	QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
+	// ScanMapSlice executes the query for statement and arguments and returns all
+	// the result rows.
+	ScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
 
-	// QueryScanMapSlice executes the query for statement and arguments and returns
-	// all the result rows.
-	QueryScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
+	// ScanMapTx executes the query for statement and arguments as a lightweight
+	// transaction. If the query is not applied, it puts the current values for the
+	// columns in results. It returns whether the query is applied.
+	ScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
 	// Tables returns the table names for keyspace. Schema changes during a session
 	// are not reflected; you must open a new Session to observe them.
@@ -95,6 +95,11 @@ type SessionMock struct {
 	mock.Mock
 }
 
+// Batch implements Session.
+func (m SessionMock) Batch(kind BatchKind) Batch {
+	return m.Called(kind).Get(0).(Batch)
+}
+
 // Close implements Session.
 func (m SessionMock) Close() {
 	m.Called()
@@ -107,43 +112,38 @@ func (m SessionMock) Columns(keyspace, table string) (map[string]gocql.TypeInfo,
 	return r.Get(0).(map[string]gocql.TypeInfo), r.Error(1)
 }
 
-// Batch implements Session.
-func (m SessionMock) Batch(kind BatchKind) Batch {
-	return m.Called(kind).Get(0).(Batch)
-}
-
-// QueryExec implements Session.
-func (m SessionMock) QueryExec(statement string, arguments ...interface{}) error {
+// Exec implements Session.
+func (m SessionMock) Exec(statement string, arguments ...interface{}) error {
 	return m.Called(statement, arguments).Error(0)
 }
 
-// QueryIterator implements Session.
-func (m SessionMock) QueryIterator(statement string, arguments ...interface{}) Iterator {
+// Iterate implements Session.
+func (m SessionMock) Iterate(statement string, arguments ...interface{}) Iterator {
 	return m.Called(statement, arguments).Get(0).(Iterator)
 }
 
-// QueryScan implements Session.
-func (m SessionMock) QueryScan(statement string, arguments, results []interface{}) error {
+// Scan implements Session.
+func (m SessionMock) Scan(statement string, arguments, results []interface{}) error {
 	return m.Called(statement, arguments, results).Error(0)
 }
 
-// QueryScanMap implements Session.
-func (m SessionMock) QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error {
+// ScanMap implements Session.
+func (m SessionMock) ScanMap(statement string, arguments []interface{}, results map[string]interface{}) error {
 	return m.Called(statement, arguments, results).Error(0)
 }
 
-// QueryScanMapTx implements Session.
-func (m SessionMock) QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
-	var r = m.Called(statement, arguments, results)
-
-	return r.Bool(0), r.Error(1)
-}
-
-// QueryScanMapSlice implements Session.
-func (m SessionMock) QueryScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
+// ScanMapSlice implements Session.
+func (m SessionMock) ScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
 	var r = m.Called(statement, arguments)
 
 	return r.Get(0).([]map[string]interface{}), r.Error(1)
+}
+
+// ScanMapTx implements Session.
+func (m SessionMock) ScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
+	var r = m.Called(statement, arguments, results)
+
+	return r.Bool(0), r.Error(1)
 }
 
 // Tables implements Session.
@@ -155,6 +155,10 @@ func (m SessionMock) Tables(keyspace string) ([]string, error) {
 
 type session struct {
 	s *gocql.Session
+}
+
+func (s session) Batch(kind BatchKind) Batch {
+	return batch{b: s.s.NewBatch(gocql.BatchType(kind)), s: s.s}
 }
 
 func (s session) Close() {
@@ -183,32 +187,28 @@ func (s session) Columns(keyspace, table string) (map[string]gocql.TypeInfo, err
 	return types, nil
 }
 
-func (s session) Batch(kind BatchKind) Batch {
-	return batch{b: s.s.NewBatch(gocql.BatchType(kind)), s: s.s}
-}
-
-func (s session) QueryExec(statement string, arguments ...interface{}) error {
+func (s session) Exec(statement string, arguments ...interface{}) error {
 	return s.s.Query(statement, arguments...).Exec()
 }
 
-func (s session) QueryIterator(statement string, arguments ...interface{}) Iterator {
+func (s session) Iterate(statement string, arguments ...interface{}) Iterator {
 	return iterator{i: s.s.Query(statement, arguments...).Iter()}
 }
 
-func (s session) QueryScan(statement string, arguments, results []interface{}) error {
+func (s session) Scan(statement string, arguments, results []interface{}) error {
 	return s.s.Query(statement, arguments...).Scan(results...)
 }
 
-func (s session) QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error {
+func (s session) ScanMap(statement string, arguments []interface{}, results map[string]interface{}) error {
 	return s.s.Query(statement, arguments...).MapScan(results)
 }
 
-func (s session) QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
-	return s.s.Query(statement, arguments...).MapScanCAS(results)
+func (s session) ScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
+	return s.s.Query(statement, arguments...).Iter().SliceMap()
 }
 
-func (s session) QueryScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
-	return s.s.Query(statement, arguments...).Iter().SliceMap()
+func (s session) ScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
+	return s.s.Query(statement, arguments...).MapScanCAS(results)
 }
 
 func (s session) Tables(keyspace string) ([]string, error) {

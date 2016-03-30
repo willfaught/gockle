@@ -10,7 +10,7 @@ func TestBatch(t *testing.T) {
 	var execs = newSession(t)
 
 	var exec = func(q string) {
-		if err := execs.QueryExec(q); err != nil {
+		if err := execs.Exec(q); err != nil {
 			t.Fatalf("Actual error %v, expected no error", err)
 		}
 	}

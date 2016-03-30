@@ -12,7 +12,7 @@ func TestIterator(t *testing.T) {
 	defer s.Close()
 
 	var exec = func(q string) {
-		if err := s.QueryExec(q); err != nil {
+		if err := s.Exec(q); err != nil {
 			t.Fatalf("Actual error %v, expected no error", err)
 		}
 	}
@@ -28,7 +28,7 @@ func TestIterator(t *testing.T) {
 
 	exec(rowInsert)
 
-	if i := s.QueryIterator("select * from gockle_test.test"); i == nil {
+	if i := s.Iterate("select * from gockle_test.test"); i == nil {
 		t.Error("Actual iterator nil, expected not nil")
 	} else {
 		var id, n int
@@ -50,7 +50,7 @@ func TestIterator(t *testing.T) {
 		}
 	}
 
-	if i := s.QueryIterator("select * from gockle_test.test"); i == nil {
+	if i := s.Iterate("select * from gockle_test.test"); i == nil {
 		t.Error("Actual iterator nil, expected not nil")
 	} else {
 		var a = map[string]interface{}{}
