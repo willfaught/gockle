@@ -27,14 +27,20 @@ var (
 	_ Batch = batch{}
 )
 
-// BatchKind matches gocql.BatchType.
+// BatchKind is the kind of Batch. The choice of kind mostly affects performance.
 type BatchKind byte
 
-// Types of batches.
+// Kinds of batches.
 const (
-	BatchLogged   BatchKind = 0
+	// BatchLogged queries are atomic. Queries are only isolated within a single
+	// partition.
+	BatchLogged BatchKind = 0
+
+	// BatchUnlogged queries are not atomic. Atomic queries spanning multiple partitions cost performance.
 	BatchUnlogged BatchKind = 1
-	BatchCounter  BatchKind = 2
+
+	// BatchCounter queries update counters and are not idempotent.
+	BatchCounter BatchKind = 2
 )
 
 // BatchMock is a mock Batch. See github.com/maraino/go-mock.
