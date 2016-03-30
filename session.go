@@ -46,7 +46,10 @@ type Session interface {
 	Tables(keyspace string) ([]string, error)
 }
 
-var _ Session = session{} // TODO: Add SessionMock
+var (
+	_ Session = SessionMock{}
+	_ Session = session{}
+)
 
 // NewSession returns a new Session for s.
 func NewSession(s *gocql.Session) Session {
