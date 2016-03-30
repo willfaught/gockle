@@ -1,10 +1,12 @@
 language: go
+go:
+    - tip
 install:
     - go get github.com/golang/lint/golint
     - go get github.com/mattn/goveralls
 before_script:
-    - golint ./...
     - go vet ./...
+    - golint ./...
 script:
     - go test -v -covermode count -coverprofile cover.out ./...
     - goveralls -coverprofile cover.out -service travis-ci -repotoken $COVERALLS_TOKEN
