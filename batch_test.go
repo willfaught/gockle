@@ -2,6 +2,7 @@ package gockle
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -41,27 +42,9 @@ func TestBatch(t *testing.T) {
 	b = s.QueryBatch(BatchKind(0))
 	b.Query("update gockle_test.test set n = 4 where id = 1 if n = 3")
 
-	var id, n int
-
-	if b, i, err := b.ExecTx(&id, &n); err == nil {
-		if id != 0 {
-			t.Errorf("Actual id %v, expected 0", id)
-		}
-
-		if n != 0 {
-			t.Errorf("Actual n %v, expected 0", n)
-		}
-
-		if !b {
-			t.Error("Actual applied false, expected true")
-		}
-
-		if i.Scan() {
-			t.Error("Actual scan true, expected false")
-		}
-
-		if err := i.Close(); err != nil {
-			t.Errorf("Actual error %v, expected no error", err)
+	if a, err := b.ExecTx(); err == nil {
+		if e := ([]map[string]interface{}{{"[applied]": true}}); !reflect.DeepEqual(a, e) {
+			t.Errorf("Actual tx %v, expected %v", a, e)
 		}
 	} else {
 		t.Errorf("Actual error %v, expected no error", err)
@@ -69,40 +52,7 @@ func TestBatch(t *testing.T) {
 
 	s.Close()
 
-	if _, _, err := b.ExecTx(&id, &n); err == nil {
-		t.Error("Actual no error, expected error")
-	}
-
-	// ExecTxMap
-	s = newSession(t)
-	b = s.QueryBatch(BatchKind(0))
-	b.Query("update gockle_test.test set n = 5 where id = 1 if n = 4")
-
-	var m = map[string]interface{}{}
-
-	if b, i, err := b.ExecTxMap(m); err == nil {
-		if l := len(m); l > 0 {
-			t.Errorf("Actual length %v, expected 0", l)
-		}
-
-		if !b {
-			t.Error("Actual applied false, expected true")
-		}
-
-		if i.Scan() {
-			t.Error("Actual scan true, expected false")
-		}
-
-		if err := i.Close(); err != nil {
-			t.Errorf("Actual error %v, expected no error", err)
-		}
-	} else {
-		t.Errorf("Actual error %v, expected no error", err)
-	}
-
-	s.Close()
-
-	if _, _, err := b.ExecTxMap(m); err == nil {
+	if _, err := b.ExecTx(); err == nil {
 		t.Error("Actual no error, expected error")
 	}
 }
@@ -117,10 +67,8 @@ func TestBatchMock(t *testing.T) {
 	}{
 		{"Exec", nil, []interface{}{nil}},
 		{"Exec", nil, []interface{}{e}},
-		{"ExecTx", []interface{}{[]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
-		{"ExecTx", []interface{}{[]interface{}{1}}, []interface{}{true, &iterator{}, e}},
-		{"ExecTxMap", []interface{}{map[string]interface{}(nil)}, []interface{}{false, (*iterator)(nil), nil}},
-		{"ExecTxMap", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{true, &iterator{}, e}},
+		{"ExecTx", nil, []interface{}{([]map[string]interface{})(nil), nil}},
+		{"ExecTx", nil, []interface{}{[]map[string]interface{}{}, e}},
 		{"Query", []interface{}{"", []interface{}(nil)}, nil},
 		{"Query", []interface{}{"a", []interface{}{1}}, nil},
 	})
