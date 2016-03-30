@@ -136,8 +136,8 @@ func TestSessionMock(t *testing.T) {
 		{"Close", nil, nil},
 		{"Columns", []interface{}{"", ""}, []interface{}{map[string]gocql.TypeInfo(nil), nil}},
 		{"Columns", []interface{}{"a", "b"}, []interface{}{map[string]gocql.TypeInfo{"c": gocql.NativeType{}}, e}},
-		{"QueryBatch", []interface{}{BatchKind(0)}, []interface{}{(*batch)(nil)}},
-		{"QueryBatch", []interface{}{BatchKind(1)}, []interface{}{&batch{}}},
+		{"Batch", []interface{}{BatchKind(0)}, []interface{}{(*batch)(nil)}},
+		{"Batch", []interface{}{BatchKind(1)}, []interface{}{&batch{}}},
 		{"QueryExec", []interface{}{"", []interface{}(nil)}, []interface{}{nil}},
 		{"QueryExec", []interface{}{"a", []interface{}{1}}, []interface{}{e}},
 		{"QueryIterator", []interface{}{"", []interface{}(nil)}, []interface{}{(*iterator)(nil)}},
@@ -177,8 +177,8 @@ func TestSessionQuery(t *testing.T) {
 
 	exec(rowInsert)
 
-	// QueryBatch
-	if s.QueryBatch(BatchKind(0)) == nil {
+	// Batch
+	if s.Batch(BatchKind(0)) == nil {
 		t.Error("Actual batch nil, expected not nil")
 	}
 

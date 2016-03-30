@@ -26,7 +26,7 @@ func TestBatch(t *testing.T) {
 
 	// Exec
 	var s = newSession(t)
-	var b = s.QueryBatch(BatchKind(0))
+	var b = s.Batch(BatchKind(0))
 
 	if b == nil {
 		t.Error("Actual batch nil, expected not nil")
@@ -39,7 +39,7 @@ func TestBatch(t *testing.T) {
 	}
 
 	// ExecTx
-	b = s.QueryBatch(BatchKind(0))
+	b = s.Batch(BatchKind(0))
 	b.Query("update gockle_test.test set n = 4 where id = 1 if n = 3")
 
 	if a, err := b.ExecTx(); err == nil {

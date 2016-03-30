@@ -32,8 +32,8 @@ type Session interface {
 	// Session to observe them.
 	Columns(keyspace, table string) (map[string]gocql.TypeInfo, error)
 
-	// QueryBatch returns a Batch for the Session.
-	QueryBatch(kind BatchKind) Batch
+	// Batch returns a Batch for the Session.
+	Batch(kind BatchKind) Batch
 
 	// QueryExec executes the query for statement and arguments.
 	QueryExec(statement string, arguments ...interface{}) error
@@ -107,8 +107,8 @@ func (m SessionMock) Columns(keyspace, table string) (map[string]gocql.TypeInfo,
 	return r.Get(0).(map[string]gocql.TypeInfo), r.Error(1)
 }
 
-// QueryBatch implements Session.
-func (m SessionMock) QueryBatch(kind BatchKind) Batch {
+// Batch implements Session.
+func (m SessionMock) Batch(kind BatchKind) Batch {
 	return m.Called(kind).Get(0).(Batch)
 }
 
@@ -183,7 +183,7 @@ func (s session) Columns(keyspace, table string) (map[string]gocql.TypeInfo, err
 	return types, nil
 }
 
-func (s session) QueryBatch(kind BatchKind) Batch {
+func (s session) Batch(kind BatchKind) Batch {
 	return batch{b: s.s.NewBatch(gocql.BatchType(kind)), s: s.s}
 }
 
