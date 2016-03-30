@@ -37,7 +37,7 @@ const (
 	BatchUnlogged BatchKind = 1
 )
 
-// BatchMock is a mock Batch. TODO: Add ref to go-mock.
+// BatchMock is a mock Batch. See github.com/maraino/go-mock.
 type BatchMock struct {
 	mock.Mock
 }

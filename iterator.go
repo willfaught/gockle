@@ -24,7 +24,7 @@ var (
 	_ Iterator = iterator{}
 )
 
-// IteratorMock is a mock Iterator.
+// IteratorMock is a mock Iterator. See github.com/maraino/go-mock.
 type IteratorMock struct {
 	mock.Mock
 }

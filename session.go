@@ -91,7 +91,7 @@ func NewSimpleSession(hosts ...string) (Session, error) {
 	return session{s: s}, nil
 }
 
-// SessionMock is a mock Session.
+// SessionMock is a mock Session. See github.com/maraino/go-mock.
 type SessionMock struct {
 	mock.Mock
 }
