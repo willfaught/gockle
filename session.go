@@ -35,29 +35,29 @@ type Session interface {
 	// QueryBatch returns a Batch for the Session.
 	QueryBatch(kind BatchKind) Batch
 
-	// QueryExec runs statement parameterized by arguments.
+	// QueryExec executes the query for statement and arguments.
 	QueryExec(statement string, arguments ...interface{}) error
 
-	// QueryIterator runs statement parameterized by arguments and returns an
+	// QueryIterator executes the query for statement and arguments and returns an
 	// Iterator for the results.
 	QueryIterator(statement string, arguments ...interface{}) Iterator
 
-	// QueryScan runs statement parameterized by arguments and puts the first result
-	// row in results.
+	// QueryScan executes the query for statement and arguments and puts the first
+	// result row in results.
 	QueryScan(statement string, arguments, results []interface{}) error
 
-	// QueryScanMap runs statement parameterized by arguments and puts the first
-	// result row in results.
+	// QueryScanMap executes the query for statement and arguments and puts the
+	// first result row in results.
 	QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
 
-	// QueryScanMapTx runs the conditional statement parameterized by arguments as a
-	// lightweight transaction. If it succeeded, it puts the new values in results,
-	// and otherwise puts the old values in results. It returns whether it
+	// QueryScanMapTx executes the query for the conditional statement and arguments
+	// as a lightweight transaction. If it succeeded, it puts the new values in
+	// results, and otherwise puts the old values in results. It returns whether it
 	// succeeded.
 	QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
-	// QuerySliceMap runs statement parameterized by arguments and returns all the
-	// result rows.
+	// QuerySliceMap executes the query for statement and arguments and returns all
+	// the result rows.
 	QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
 
 	// Tables returns the table names for keyspace. Schema changes during a session
