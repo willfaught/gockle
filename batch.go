@@ -30,11 +30,11 @@ var (
 // BatchKind matches gocql.BatchType.
 type BatchKind byte
 
-// Types of batches. TODO: Reorder and add doc.
+// Types of batches.
 const (
-	BatchCounter  BatchKind = 2
 	BatchLogged   BatchKind = 0
 	BatchUnlogged BatchKind = 1
+	BatchCounter  BatchKind = 2
 )
 
 // BatchMock is a mock Batch. See github.com/maraino/go-mock.
