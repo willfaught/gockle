@@ -7,42 +7,59 @@ import (
 	"github.com/maraino/go-mock"
 )
 
-// Session wraps *gocql.Session.
+func metadata(s *gocql.Session, keyspace string) (*gocql.KeyspaceMetadata, error) {
+	var m, err = s.KeyspaceMetadata(keyspace)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if m.DurableWrites && m.Name == keyspace && m.StrategyClass == "" && m.StrategyOptions == nil && m.Tables == nil {
+		return nil, fmt.Errorf("gockle: keyspace %v invalid", keyspace)
+	}
+
+	return m, nil
+}
+
+// Session is a Cassandra connection. The Query methods run CQL queries. The
+// Columns and Tables methods provide simple metadata.
 type Session interface {
-	// Close closes the session.
+	// Close closes the Session.
 	Close()
 
 	// Columns returns a map from column names to types for keyspace and table.
-	// Schema changes during a session are not reflected.
+	// Schema changes during a session are not reflected; you must open a new
+	// Session to observe them.
 	Columns(keyspace, table string) (map[string]gocql.TypeInfo, error)
 
-	// QueryBatch returns a Batch with type kind for batched queries.
+	// QueryBatch returns a Batch for the Session.
 	QueryBatch(kind BatchKind) Batch
 
 	// QueryExec runs statement with arguments.
 	QueryExec(statement string, arguments ...interface{}) error
 
-	// QueryIterator runs statement with arguments and returns an Iterator for
-	// the results.
+	// QueryIterator runs statement with arguments and returns an Iterator for the
+	// results.
 	QueryIterator(statement string, arguments ...interface{}) Iterator
 
-	// QueryScan runs statement with arguments.
+	// QueryScan runs statement with arguments and puts the first result row in
+	// results.
 	QueryScan(statement string, arguments, results []interface{}) error
 
 	// QueryScanMap runs statement with arguments and puts the first result row
 	// in results.
 	QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
 
-	// QueryScanMapTx runs statement with arguments as a lightweight transaction and
-	// puts the first result row in results. It returns whether the transaction
-	// succeeded. If not, it puts the old values in results.
+	// QueryScanMapTx runs the conditional statement with arguments as a lightweight
+	// transaction. If it succeeded, it puts the new values in results, and
+	// otherwise puts the old values in results. It returns whether it succeeded.
 	QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
-	// QuerySliceMap runs statement with arguments and returns all result rows.
+	// QuerySliceMap runs statement with arguments and returns all the result rows.
 	QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
 
 	// Tables returns the table names for keyspace. Schema changes during a session
-	// are not reflected. Invalid keyspace names are not errors.
+	// are not reflected; you must open a new Session to observe them.
 	Tables(keyspace string) ([]string, error)
 }
 
@@ -56,7 +73,8 @@ func NewSession(s *gocql.Session) Session {
 	return session{s: s}
 }
 
-// NewSimpleSession returns a new Session for hosts.
+// NewSimpleSession returns a new Session for hosts. It uses native protocol
+// version 4.
 func NewSimpleSession(hosts ...string) (Session, error) {
 	var c = gocql.NewCluster(hosts...)
 
@@ -143,7 +161,7 @@ func (s session) Close() {
 }
 
 func (s session) Columns(keyspace, table string) (map[string]gocql.TypeInfo, error) {
-	var m, err = s.s.KeyspaceMetadata(keyspace)
+	var m, err = metadata(s.s, keyspace)
 
 	if err != nil {
 		return nil, err
@@ -193,7 +211,7 @@ func (s session) QuerySliceMap(statement string, arguments ...interface{}) ([]ma
 }
 
 func (s session) Tables(keyspace string) ([]string, error) {
-	var m, err = s.s.KeyspaceMetadata(keyspace)
+	var m, err = metadata(s.s, keyspace)
 
 	if err != nil {
 		return nil, err
