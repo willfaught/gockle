@@ -2,6 +2,7 @@ language: go
 go:
     - tip
 install:
+    - go get ./...
     - go get github.com/golang/lint/golint
     - go get github.com/mattn/goveralls
 before_script:
