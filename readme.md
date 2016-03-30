@@ -4,3 +4,5 @@
 [![Build](https://travis-ci.org/willfaught/gockle.svg?branch=master)](https://travis-ci.org/willfaught/gockle)
 [![Report](https://goreportcard.com/badge/github.com/willfaught/gockle)](https://goreportcard.com/report/github.com/willfaught/gockle)
 [![Test Coverage](https://coveralls.io/repos/github/willfaught/gockle/badge.svg?branch=master)](https://coveralls.io/github/willfaught/gockle?branch=master)
+
+*Note: Test coverage is low because there is no Cassandra database for the tests to use. Providing one yields 96.05% test coverage. Some code is uncovered because gocql cannot be mocked. This is one difficulty your code avoids by using gockle.*
