@@ -1,18 +1,16 @@
 package gockle
 
 import (
-	"flag"
 	"fmt"
 	"reflect"
 	"testing"
 	"time"
 
-	"github.com/facebookgo/flagenv"
 	"github.com/gocql/gocql"
 	"github.com/maraino/go-mock"
 )
 
-const timeout = 5 * time.Second
+const version = 4
 
 const (
 	ksCreate  = "create keyspace gockle_test with replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
@@ -23,8 +21,6 @@ const (
 	tabDrop   = "drop table gockle_test.test"
 )
 
-var protoVersion = flag.Int("proto-version", 4, "CQL protocol version")
-
 func TestNewSession(t *testing.T) {
 	if a, e := NewSession(nil), (session{}); a != e {
 		t.Errorf("Actual session %v, expected %v", a, e)
@@ -32,8 +28,7 @@ func TestNewSession(t *testing.T) {
 
 	var c = gocql.NewCluster("localhost")
 
-	c.ProtoVersion = *protoVersion
-	c.Timeout = timeout
+	c.ProtoVersion = version
 
 	var s, err = c.CreateSession()
 
@@ -43,6 +38,23 @@ func TestNewSession(t *testing.T) {
 
 	if a, e := NewSession(s), (session{s: s}); a != e {
 		t.Errorf("Actual session %v, expected %v", a, e)
+	}
+}
+
+func TestNewSimpleSession(t *testing.T) {
+	if s, err := NewSimpleSession(); err == nil {
+		t.Error("Actual no error, expected error")
+	} else if s != nil {
+		t.Errorf("Actual session %v, expected nil", s)
+		s.Close()
+	}
+
+	if a, err := NewSimpleSession("localhost"); err != nil {
+		t.Errorf("Actual error %v, expected no error", err)
+	} else if a == nil {
+		t.Errorf("Actual session nil, expected not nil")
+	} else {
+		a.Close()
 	}
 }
 
@@ -228,19 +240,11 @@ func TestSessionQuery(t *testing.T) {
 	}
 }
 
-func init() {
-	flag.Parse()
-
-	if err := flagenv.ParseSet("gockle_", flag.CommandLine); err != nil {
-		panic(err)
-	}
-}
-
 func newSession(t *testing.T) Session {
 	var c = gocql.NewCluster("localhost")
 
-	c.ProtoVersion = *protoVersion
-	c.Timeout = timeout
+	c.ProtoVersion = version
+	c.Timeout = 5 * time.Second
 
 	var s, err = c.CreateSession()
 

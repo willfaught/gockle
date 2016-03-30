@@ -46,11 +46,26 @@ type Session interface {
 	Tables(keyspace string) ([]string, error)
 }
 
-var _ Session = session{}
+var _ Session = session{} // TODO: Add SessionMock
 
 // NewSession returns a new Session for s.
 func NewSession(s *gocql.Session) Session {
 	return session{s: s}
+}
+
+// NewSimpleSession returns a new Session for hosts.
+func NewSimpleSession(hosts ...string) (Session, error) {
+	var c = gocql.NewCluster(hosts...)
+
+	c.ProtoVersion = 4
+
+	var s, err = c.CreateSession()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return session{s: s}, nil
 }
 
 // SessionMock is a mock Session.
