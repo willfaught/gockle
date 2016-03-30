@@ -8,19 +8,16 @@ import (
 
 var mySession = &SessionMock{}
 
-func Example_dump() {
-	var rows, _ = mySession.QuerySliceMap("select * from users")
+func ExampleBatch() {
+	var b = mySession.QueryBatch(BatchLogged)
 
-	for _, row := range rows {
-		fmt.Println(row)
-	}
+	b.Query("insert into users (id, name) values (123, 'me')")
+	b.Query("insert into users (id, name) values (456, 'you')")
+
+	b.Exec()
 }
 
-func Example_insert() {
-	mySession.QueryExec("insert into users (id, name) values (123, 'me')")
-}
-
-func Example_print() {
+func ExampleIterator() {
 	var i = mySession.QueryIterator("select * from users")
 
 	for done := false; !done; {
@@ -29,6 +26,14 @@ func Example_print() {
 		done = i.ScanMap(m)
 
 		fmt.Println(m)
+	}
+}
+
+func ExampleSession() {
+	var rows, _ = mySession.QuerySliceMap("select * from users")
+
+	for _, row := range rows {
+		fmt.Println(row)
 	}
 }
 
