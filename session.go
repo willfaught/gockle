@@ -55,9 +55,9 @@ type Session interface {
 	// values for the columns in results. It returns whether the query is applied.
 	QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
-	// QuerySliceMap executes the query for statement and arguments and returns all
-	// the result rows.
-	QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
+	// QueryScanMapSlice executes the query for statement and arguments and returns
+	// all the result rows.
+	QueryScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
 
 	// Tables returns the table names for keyspace. Schema changes during a session
 	// are not reflected; you must open a new Session to observe them.
@@ -139,8 +139,8 @@ func (m SessionMock) QueryScanMapTx(statement string, arguments []interface{}, r
 	return r.Bool(0), r.Error(1)
 }
 
-// QuerySliceMap implements Session.
-func (m SessionMock) QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
+// QueryScanMapSlice implements Session.
+func (m SessionMock) QueryScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
 	var r = m.Called(statement, arguments)
 
 	return r.Get(0).([]map[string]interface{}), r.Error(1)
@@ -207,7 +207,7 @@ func (s session) QueryScanMapTx(statement string, arguments []interface{}, resul
 	return s.s.Query(statement, arguments...).MapScanCAS(results)
 }
 
-func (s session) QuerySliceMap(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
+func (s session) QueryScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
 	return s.s.Query(statement, arguments...).Iter().SliceMap()
 }
 

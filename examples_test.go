@@ -30,7 +30,7 @@ func ExampleIterator() {
 }
 
 func ExampleSession() {
-	var rows, _ = mySession.QuerySliceMap("select * from users")
+	var rows, _ = mySession.QueryScanMapSlice("select * from users")
 
 	for _, row := range rows {
 		fmt.Println(row)

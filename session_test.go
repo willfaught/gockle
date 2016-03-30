@@ -148,8 +148,8 @@ func TestSessionMock(t *testing.T) {
 		{"QueryScanMap", []interface{}{"a", []interface{}{1}, map[string]interface{}{"b": 2}}, []interface{}{e}},
 		{"QueryScanMapTx", []interface{}{"", []interface{}(nil), map[string]interface{}(nil)}, []interface{}{false, nil}},
 		{"QueryScanMapTx", []interface{}{"a", []interface{}{1}, map[string]interface{}{"b": 2}}, []interface{}{true, e}},
-		{"QuerySliceMap", []interface{}{"", []interface{}(nil)}, []interface{}{[]map[string]interface{}(nil), nil}},
-		{"QuerySliceMap", []interface{}{"a", []interface{}{1}}, []interface{}{[]map[string]interface{}{{"b": 2}}, e}},
+		{"QueryScanMapSlice", []interface{}{"", []interface{}(nil)}, []interface{}{[]map[string]interface{}(nil), nil}},
+		{"QueryScanMapSlice", []interface{}{"a", []interface{}{1}}, []interface{}{[]map[string]interface{}{{"b": 2}}, e}},
 		{"Tables", []interface{}{""}, []interface{}{[]string(nil), nil}},
 		{"Tables", []interface{}{"a"}, []interface{}{[]string{"b"}, e}},
 	})
@@ -228,10 +228,10 @@ func TestSessionQuery(t *testing.T) {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
 
-	// QuerySliceMap
+	// QueryScanMapSlice
 	var es = []map[string]interface{}{{"id": 1, "n": 3}}
 
-	if as, err := s.QuerySliceMap("select * from gockle_test.test"); err == nil {
+	if as, err := s.QueryScanMapSlice("select * from gockle_test.test"); err == nil {
 		if !reflect.DeepEqual(as, es) {
 			t.Errorf("Actual rows %v, expected %v", as, es)
 		}
