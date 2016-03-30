@@ -50,10 +50,9 @@ type Session interface {
 	// first result row in results.
 	QueryScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
 
-	// QueryScanMapTx executes the query for the conditional statement and arguments
-	// as a lightweight transaction. If it succeeded, it puts the new values in
-	// results, and otherwise puts the old values in results. It returns whether it
-	// succeeded.
+	// QueryScanMapTx executes the query for statement and arguments as a
+	// lightweight transaction. If the query is not applied, it puts the current
+	// values for the columns in results. It returns whether the query is applied.
 	QueryScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
 	// QuerySliceMap executes the query for statement and arguments and returns all
