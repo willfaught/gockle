@@ -56,7 +56,7 @@ type Session interface {
 
 	// ScanMapTx executes the query for statement and arguments as a lightweight
 	// transaction. If the query is not applied, it puts the current values for the
-	// columns in results. It returns whether the query is applied.
+	// conditional columns in results. It returns whether the query is applied.
 	ScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
 
 	// Tables returns the table names for keyspace. Schema changes during a session
