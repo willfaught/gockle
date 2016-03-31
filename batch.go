@@ -5,6 +5,8 @@ import (
 	"github.com/maraino/go-mock"
 )
 
+const ColumnApplied = "[applied]"
+
 // Batch is an ordered collection of CQL queries.
 type Batch interface {
 	// Add adds the query for statement and arguments.
@@ -16,7 +18,7 @@ type Batch interface {
 	// ExecTx executes the queries in the order they were added. It returns a slice
 	// of maps from columns to values, the maps corresponding to all the conditional
 	// queries, and ordered in the same relative order. The special column
-	// "[applied]" has a bool that indicates whether the conditional statement was
+	// ColumnApplied has a bool that indicates whether the conditional statement was
 	// applied. If a conditional statement was not applied, the current values for
 	// the columns are put into the map.
 	ExecTx() ([]map[string]interface{}, error)
@@ -97,7 +99,7 @@ func (b batch) ExecTx() ([]map[string]interface{}, error) {
 		return nil, err
 	}
 
-	m["[applied]"] = a
+	m[ColumnApplied] = a
 	s = append([]map[string]interface{}{m}, s...)
 
 	return s, nil
