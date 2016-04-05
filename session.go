@@ -14,7 +14,7 @@ func metadata(s *gocql.Session, keyspace string) (*gocql.KeyspaceMetadata, error
 		return nil, err
 	}
 
-	if m.DurableWrites && m.Name == keyspace && m.StrategyClass == "" && m.StrategyOptions == nil && m.Tables == nil {
+	if !m.DurableWrites && m.Name == keyspace && m.StrategyClass == "" && len(m.StrategyOptions) == 0 && len(m.Tables) == 0 {
 		return nil, fmt.Errorf("gockle: keyspace %v invalid", keyspace)
 	}
 

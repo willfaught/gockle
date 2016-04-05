@@ -86,6 +86,10 @@ func TestSessionMetadata(t *testing.T) {
 		t.Fatalf("Actual error %v, expected no error", err)
 	}
 
+	if _, err := s.Tables("gockle_test_invalid"); err == nil {
+		t.Errorf("Actual no error, expected error")
+	}
+
 	s.Close()
 
 	if _, err := s.Tables("gockle_test"); err == nil {
