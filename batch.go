@@ -5,6 +5,8 @@ import (
 	"github.com/maraino/go-mock"
 )
 
+// ColumnApplied is the name of a special column that has a bool that indicates
+// whether a conditional statement was applied.
 const ColumnApplied = "[applied]"
 
 // Batch is an ordered collection of CQL queries.
