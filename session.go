@@ -40,7 +40,7 @@ type Session interface {
 
 	// Scan executes the query for statement and arguments and puts the first
 	// result row in results.
-	Scan(statement string, arguments, results []interface{}) error
+	Scan(statement string, results []interface{}, arguments ...interface{}) error
 
 	// ScanIterator executes the query for statement and arguments and returns an
 	// Iterator for the results.
@@ -48,7 +48,7 @@ type Session interface {
 
 	// ScanMap executes the query for statement and arguments and puts the first
 	// result row in results.
-	ScanMap(statement string, arguments []interface{}, results map[string]interface{}) error
+	ScanMap(statement string, results map[string]interface{}, arguments ...interface{}) error
 
 	// ScanMapSlice executes the query for statement and arguments and returns all
 	// the result rows.
@@ -57,7 +57,7 @@ type Session interface {
 	// ScanMapTx executes the query for statement and arguments as a lightweight
 	// transaction. If the query is not applied, it puts the current values for the
 	// conditional columns in results. It returns whether the query is applied.
-	ScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error)
+	ScanMapTx(statement string, results map[string]interface{}, arguments ...interface{}) (bool, error)
 
 	// Tables returns the table names for keyspace. Schema changes during a session
 	// are not reflected; you must open a new Session to observe them.
@@ -118,8 +118,8 @@ func (m SessionMock) Exec(statement string, arguments ...interface{}) error {
 }
 
 // Scan implements Session.
-func (m SessionMock) Scan(statement string, arguments, results []interface{}) error {
-	return m.Called(statement, arguments, results).Error(0)
+func (m SessionMock) Scan(statement string, results []interface{}, arguments ...interface{}) error {
+	return m.Called(statement, results, arguments).Error(0)
 }
 
 // ScanIterator implements Session.
@@ -128,8 +128,8 @@ func (m SessionMock) ScanIterator(statement string, arguments ...interface{}) It
 }
 
 // ScanMap implements Session.
-func (m SessionMock) ScanMap(statement string, arguments []interface{}, results map[string]interface{}) error {
-	return m.Called(statement, arguments, results).Error(0)
+func (m SessionMock) ScanMap(statement string, results map[string]interface{}, arguments ...interface{}) error {
+	return m.Called(statement, results, arguments).Error(0)
 }
 
 // ScanMapSlice implements Session.
@@ -140,8 +140,8 @@ func (m SessionMock) ScanMapSlice(statement string, arguments ...interface{}) ([
 }
 
 // ScanMapTx implements Session.
-func (m SessionMock) ScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
-	var r = m.Called(statement, arguments, results)
+func (m SessionMock) ScanMapTx(statement string, results map[string]interface{}, arguments ...interface{}) (bool, error) {
+	var r = m.Called(statement, results, arguments)
 
 	return r.Bool(0), r.Error(1)
 }
@@ -191,7 +191,7 @@ func (s session) Exec(statement string, arguments ...interface{}) error {
 	return s.s.Query(statement, arguments...).Exec()
 }
 
-func (s session) Scan(statement string, arguments, results []interface{}) error {
+func (s session) Scan(statement string, results []interface{}, arguments ...interface{}) error {
 	return s.s.Query(statement, arguments...).Scan(results...)
 }
 
@@ -199,7 +199,7 @@ func (s session) ScanIterator(statement string, arguments ...interface{}) Iterat
 	return iterator{i: s.s.Query(statement, arguments...).Iter()}
 }
 
-func (s session) ScanMap(statement string, arguments []interface{}, results map[string]interface{}) error {
+func (s session) ScanMap(statement string, results map[string]interface{}, arguments ...interface{}) error {
 	return s.s.Query(statement, arguments...).MapScan(results)
 }
 
@@ -207,7 +207,7 @@ func (s session) ScanMapSlice(statement string, arguments ...interface{}) ([]map
 	return s.s.Query(statement, arguments...).Iter().SliceMap()
 }
 
-func (s session) ScanMapTx(statement string, arguments []interface{}, results map[string]interface{}) (bool, error) {
+func (s session) ScanMapTx(statement string, results map[string]interface{}, arguments ...interface{}) (bool, error) {
 	return s.s.Query(statement, arguments...).MapScanCAS(results)
 }
 

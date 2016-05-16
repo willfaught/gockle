@@ -148,12 +148,12 @@ func TestSessionMock(t *testing.T) {
 		{"Scan", []interface{}{"a", []interface{}{1}, []interface{}{1}}, []interface{}{e}},
 		{"ScanIterator", []interface{}{"", []interface{}(nil)}, []interface{}{(*iterator)(nil)}},
 		{"ScanIterator", []interface{}{"a", []interface{}{1}}, []interface{}{iterator{}}},
-		{"ScanMap", []interface{}{"", []interface{}(nil), map[string]interface{}(nil)}, []interface{}{nil}},
-		{"ScanMap", []interface{}{"a", []interface{}{1}, map[string]interface{}{"b": 2}}, []interface{}{e}},
-		{"ScanMapTx", []interface{}{"", []interface{}(nil), map[string]interface{}(nil)}, []interface{}{false, nil}},
-		{"ScanMapTx", []interface{}{"a", []interface{}{1}, map[string]interface{}{"b": 2}}, []interface{}{true, e}},
+		{"ScanMap", []interface{}{"", map[string]interface{}(nil), []interface{}(nil)}, []interface{}{nil}},
+		{"ScanMap", []interface{}{"a", map[string]interface{}{"b": 2}, []interface{}{1}}, []interface{}{e}},
 		{"ScanMapSlice", []interface{}{"", []interface{}(nil)}, []interface{}{[]map[string]interface{}(nil), nil}},
 		{"ScanMapSlice", []interface{}{"a", []interface{}{1}}, []interface{}{[]map[string]interface{}{{"b": 2}}, e}},
+		{"ScanMapTx", []interface{}{"", map[string]interface{}(nil), []interface{}(nil)}, []interface{}{false, nil}},
+		{"ScanMapTx", []interface{}{"a", map[string]interface{}{"b": 2}, []interface{}{1}}, []interface{}{true, e}},
 		{"Tables", []interface{}{""}, []interface{}{[]string(nil), nil}},
 		{"Tables", []interface{}{"a"}, []interface{}{[]string{"b"}, e}},
 	})
@@ -194,7 +194,7 @@ func TestSessionQuery(t *testing.T) {
 	// Scan
 	var id, n int
 
-	if err := s.Scan("select id, n from gockle_test.test", nil, []interface{}{&id, &n}); err == nil {
+	if err := s.Scan("select id, n from gockle_test.test", []interface{}{&id, &n}); err == nil {
 		if id != 1 {
 			t.Errorf("Actual id %v, expected 1", id)
 		}
@@ -209,7 +209,7 @@ func TestSessionQuery(t *testing.T) {
 	// ScanMap
 	var am, em = map[string]interface{}{}, map[string]interface{}{"id": 1, "n": 2}
 
-	if err := s.ScanMap("select id, n from gockle_test.test", nil, am); err == nil {
+	if err := s.ScanMap("select id, n from gockle_test.test", am); err == nil {
 		if !reflect.DeepEqual(am, em) {
 			t.Errorf("Actual map %v, expected %v", am, em)
 		}
@@ -220,7 +220,7 @@ func TestSessionQuery(t *testing.T) {
 	// ScanMapTx
 	am = map[string]interface{}{}
 
-	if b, err := s.ScanMapTx("update gockle_test.test set n = 3 where id = 1 if n = 2", nil, am); err == nil {
+	if b, err := s.ScanMapTx("update gockle_test.test set n = 3 where id = 1 if n = 2", am); err == nil {
 		if !b {
 			t.Error("Actual applied false, expected true")
 		}
