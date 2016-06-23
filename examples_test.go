@@ -8,7 +8,7 @@ import (
 
 var mySession = &SessionMock{}
 
-func ExampleIteratorScanMap() {
+func ExampleIterator_ScanMap() {
 	var iteratorMock = &IteratorMock{}
 
 	iteratorMock.When("ScanMap", mock.Any).Call(func(m map[string]interface{}) bool {
@@ -46,7 +46,7 @@ func ExampleIteratorScanMap() {
 	// Output: id = 1, name = alex
 }
 
-func ExampleSessionBatch() {
+func ExampleSession_Batch() {
 	var batchMock = &BatchMock{}
 
 	batchMock.When("Add", "insert into users (id, name) values (1, 'alex')", mock.Any).Return()
@@ -71,7 +71,7 @@ func ExampleSessionBatch() {
 	// Output: invalid
 }
 
-func ExampleSessionScanMapSlice() {
+func ExampleSession_ScanMapSlice() {
 	var sessionMock = &SessionMock{}
 
 	const query = "select * from users"
