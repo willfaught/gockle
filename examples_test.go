@@ -8,48 +8,85 @@ import (
 
 var mySession = &SessionMock{}
 
-func ExampleBatch() {
-	var b = mySession.Batch(BatchLogged)
+func ExampleIteratorScanMap() {
+	var iteratorMock = &IteratorMock{}
 
-	b.Add("insert into users (id, name) values (123, 'me')")
-	b.Add("insert into users (id, name) values (456, 'you')")
-
-	b.Exec()
-}
-
-func ExampleIterator() {
-	var i = mySession.ScanIterator("select * from users")
-
-	for done := false; !done; {
-		var m = map[string]interface{}{}
-
-		done = i.ScanMap(m)
-
-		fmt.Println(m)
-	}
-}
-
-func ExampleSession() {
-	var rows, _ = mySession.ScanMapSlice("select * from users")
-
-	for _, row := range rows {
-		fmt.Println(row)
-	}
-}
-
-func init() {
-	var i = &IteratorMock{}
-
-	i.When("ScanMap", mock.Any).Call(func(m map[string]interface{}) bool {
-		m["id"] = 123
-		m["name"] = "me"
+	iteratorMock.When("ScanMap", mock.Any).Call(func(m map[string]interface{}) bool {
+		m["id"] = 1
+		m["name"] = "alex"
 
 		return false
 	})
 
-	i.When("Close").Return(nil)
+	iteratorMock.When("Close").Return(nil)
 
-	mySession.When("Exec", mock.Any).Return(nil)
-	mySession.When("ScanIterator", mock.Any).Return(i)
-	mySession.When("ScanMap", mock.Any).Return(map[string]interface{}{"id": 1, "name": "me"}, nil)
+	var sessionMock = &SessionMock{}
+
+	const query = "select * from users"
+
+	sessionMock.When("ScanIterator", query, mock.Any).Return(iteratorMock)
+	sessionMock.When("Close").Return()
+
+	var session Session = sessionMock
+	var iterator = session.ScanIterator(query)
+	var row = map[string]interface{}{}
+
+	for more := true; more; {
+		more = iterator.ScanMap(row)
+
+		fmt.Printf("id = %v, name = %v\n", row["id"], row["name"])
+	}
+
+	if err := iterator.Close(); err != nil {
+		fmt.Println(err)
+	}
+
+	session.Close()
+
+	// Output: id = 1, name = alex
+}
+
+func ExampleSessionBatch() {
+	var batchMock = &BatchMock{}
+
+	batchMock.When("Add", "insert into users (id, name) values (1, 'alex')", mock.Any).Return()
+	batchMock.When("Exec").Return(fmt.Errorf("invalid"))
+
+	var sessionMock = &SessionMock{}
+
+	sessionMock.When("Batch", BatchLogged).Return(batchMock)
+	sessionMock.When("Close").Return()
+
+	var session Session = sessionMock
+	var batch = session.Batch(BatchLogged)
+
+	batch.Add("insert into users (id, name) values (1, 'alex')")
+
+	if err := batch.Exec(); err != nil {
+		fmt.Println(err)
+	}
+
+	session.Close()
+
+	// Output: invalid
+}
+
+func ExampleSessionScanMapSlice() {
+	var sessionMock = &SessionMock{}
+
+	const query = "select * from users"
+
+	sessionMock.When("ScanMapSlice", query, mock.Any).Return([]map[string]interface{}{{"id": 1, "name": "alex"}}, nil)
+	sessionMock.When("Close").Return()
+
+	var session Session = sessionMock
+	var rows, _ = session.ScanMapSlice(query)
+
+	for _, row := range rows {
+		fmt.Printf("id = %v, name = %v\n", row["id"], row["name"])
+	}
+
+	session.Close()
+
+	// Output: id = 1, name = alex
 }
