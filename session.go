@@ -63,9 +63,9 @@ type Session interface {
 	// are not reflected; you must open a new Session to observe them.
 	Tables(keyspace string) ([]string, error)
 
-	// Query generates a new query object for interacting with the database.
-	// Further details of the query may be tweaked using the resulting query
-	// value before the query is executed. Query is automatically prepared if
+	// Query returns a Query to interact with the database.
+	// Further details of the query may be tweaked using the resulting Query
+	// before the query is executed. Query is automatically prepared if
 	// it has not previously been executed.
 	Query(statement string, arguments ...interface{}) Query
 }

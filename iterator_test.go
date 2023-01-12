@@ -101,7 +101,7 @@ func TestIteratorPaging(t *testing.T) {
 		t.Error("Actual iterator nil, expected not nil")
 	} else {
 		var id, n int
-		// first row
+		// First row
 		if !i.Scan(&id, &n) {
 			t.Errorf("Actual more false, expected true")
 		}

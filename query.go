@@ -38,7 +38,7 @@ type Query interface {
 	// were selected, ErrNotFound is returned.
 	Scan(dest ...interface{}) error
 
-	// Release releases a query back into a pool of queries. Released Queries
+	// Release releases a query back into a pool of queries. Released queries
 	// cannot be reused.
 	Release()
 }
@@ -48,7 +48,7 @@ var (
 	_ Query = query{}
 )
 
-// QueryMock is a mock Query. See github.com/maraino/go-mock.
+// QueryMock is a mock Query.
 type QueryMock struct {
 	mock.Mock
 }
