@@ -41,6 +41,13 @@ type Query interface {
 	// Release releases a query back into a pool of queries. Released queries
 	// cannot be reused.
 	Release()
+
+	// GetConsistency returns the currently configured consistency level for
+	// the query.
+	GetConsistency() gocql.Consistency
+
+	// SetConsistency sets the consistency level for this query.
+	SetConsistency(c gocql.Consistency)
 }
 
 var (
@@ -93,6 +100,14 @@ func (m QueryMock) Release() {
 	m.Called()
 }
 
+func (m QueryMock) GetConsistency() gocql.Consistency {
+	return m.Called().Get(0).(gocql.Consistency)
+}
+
+func (m QueryMock) SetConsistency(c gocql.Consistency) {
+	m.Called(c)
+}
+
 type query struct {
 	q *gocql.Query
 }
@@ -127,4 +142,12 @@ func (q query) Scan(dest ...interface{}) error {
 
 func (q query) Release() {
 	q.q.Release()
+}
+
+func (q query) GetConsistency() gocql.Consistency {
+	return q.q.GetConsistency()
+}
+
+func (q query) SetConsistency(c gocql.Consistency) {
+	q.q.SetConsistency(c)
 }
