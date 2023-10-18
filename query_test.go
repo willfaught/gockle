@@ -3,6 +3,7 @@ package gockle
 import (
 	"context"
 	"fmt"
+	"github.com/gocql/gocql"
 	"reflect"
 	"testing"
 )
@@ -73,5 +74,23 @@ func TestQueryMock(t *testing.T) {
 		{"MapScan", []interface{}{map[string]interface{}(nil)}, []interface{}{nil}},
 		{"MapScan", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{e}},
 		{"Release", nil, nil},
+		{"GetConsistency", nil, []interface{}{gocql.Quorum}},
+		{"SetConsistency", []interface{}{gocql.One}, nil},
 	})
+}
+
+func TestQueryConsistency(t *testing.T) {
+	var s = newSession(t)
+	defer s.Close()
+	q := s.Query("select * from gockle_test.test")
+	actual := q.GetConsistency()
+	if gocql.Quorum != actual {
+		t.Errorf("Actual consistency %s, expected %s", actual, gocql.Quorum)
+	}
+
+	q.SetConsistency(gocql.One)
+	actual = q.GetConsistency()
+	if gocql.One != actual {
+		t.Errorf("Actual consistency %s, expected %s", actual, gocql.One)
+	}
 }
