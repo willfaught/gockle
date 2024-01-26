@@ -33,6 +33,16 @@ type Query interface {
 	// were selected, ErrNotFound is returned.
 	MapScan(m map[string]interface{}) error
 
+	// MapScanCAS executes a lightweight transaction (i.e. an UPDATE or INSERT
+	// statement containing an IF clause). If the transaction fails because
+	// the existing values did not match, the previous values will be stored
+	// in dest map.
+	//
+	// As for INSERT .. IF NOT EXISTS, previous values will be returned as if
+	// SELECT * FROM. So using ScanCAS with INSERT is inherently prone to
+	// column mismatching. MapScanCAS is added to capture them safely.
+	MapScanCAS(dest map[string]interface{}) (applied bool, err error)
+
 	// Scan executes the query, copies the columns of the first selected row
 	// into the values pointed at by dest and discards the rest. If no rows
 	// were selected, ErrNotFound is returned.
@@ -48,6 +58,9 @@ type Query interface {
 
 	// SetConsistency sets the consistency level for this query.
 	SetConsistency(c gocql.Consistency)
+
+	// SetConsistency sets the consistency level for this query.
+	Consistency(c gocql.Consistency) Query
 }
 
 var (
@@ -90,6 +103,12 @@ func (m QueryMock) MapScan(mm map[string]interface{}) error {
 	return m.Called(mm).Error(0)
 }
 
+// MapScan implements Query.
+func (m QueryMock) MapScanCAS(mm map[string]interface{}) (bool, error) {
+	call := m.Called(mm)
+	return call.Bool(0), call.Error(1)
+}
+
 // Scan implements Query.
 func (m QueryMock) Scan(dest ...interface{}) error {
 	return m.Called(dest).Error(0)
@@ -106,6 +125,10 @@ func (m QueryMock) GetConsistency() gocql.Consistency {
 
 func (m QueryMock) SetConsistency(c gocql.Consistency) {
 	m.Called(c)
+}
+
+func (m QueryMock) Consistency(c gocql.Consistency) Query {
+	return m.Called(c).Get(0).(Query)
 }
 
 type query struct {
@@ -150,4 +173,13 @@ func (q query) GetConsistency() gocql.Consistency {
 
 func (q query) SetConsistency(c gocql.Consistency) {
 	q.q.SetConsistency(c)
+}
+
+func (q query) Consistency(c gocql.Consistency) Query {
+	q.q = q.q.Consistency(c)
+	return q
+}
+
+func (q query) MapScanCAS(dest map[string]interface{}) (applied bool, err error) {
+	return q.q.MapScanCAS(dest)
 }

@@ -3,9 +3,10 @@ package gockle
 import (
 	"context"
 	"fmt"
-	"github.com/gocql/gocql"
 	"reflect"
 	"testing"
+
+	"github.com/gocql/gocql"
 )
 
 func TestQuery(t *testing.T) {
@@ -73,9 +74,11 @@ func TestQueryMock(t *testing.T) {
 		{"Iter", nil, []interface{}{it}},
 		{"MapScan", []interface{}{map[string]interface{}(nil)}, []interface{}{nil}},
 		{"MapScan", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{e}},
+		{"MapScanCAS", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{true, e}},
 		{"Release", nil, nil},
 		{"GetConsistency", nil, []interface{}{gocql.Quorum}},
 		{"SetConsistency", []interface{}{gocql.One}, nil},
+		{"Consistency", []interface{}{gocql.One}, []interface{}{m}},
 	})
 }
 
