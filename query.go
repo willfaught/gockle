@@ -60,7 +60,7 @@ type Query interface {
 	SetConsistency(c gocql.Consistency)
 
 	// Consistency sets the consistency level for this query. If no consistency
-	// level have been set, the default consistency level of the cluster
+	// level has been set, the default consistency level of the cluster
 	// is used.
 	Consistency(c gocql.Consistency) Query
 }
