@@ -79,6 +79,7 @@ func TestQueryMock(t *testing.T) {
 		{"GetConsistency", nil, []interface{}{gocql.Quorum}},
 		{"SetConsistency", []interface{}{gocql.One}, nil},
 		{"Consistency", []interface{}{gocql.One}, []interface{}{m}},
+		{"SerialConsistency", []interface{}{gocql.LocalSerial}, []interface{}{m}},
 	})
 }
 
