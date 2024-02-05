@@ -63,6 +63,13 @@ type Query interface {
 	// level has been set, the default consistency level of the cluster
 	// is used.
 	Consistency(c gocql.Consistency) Query
+
+	// SerialConsistency sets the consistency level for the
+	// serial phase of conditional updates. That consistency can only be
+	// either SERIAL or LOCAL_SERIAL and if not present, it defaults to
+	// SERIAL. This option will be ignored for anything else that a
+	// conditional update/insert.
+	SerialConsistency(cons gocql.SerialConsistency) Query
 }
 
 var (
@@ -133,6 +140,10 @@ func (m QueryMock) Consistency(c gocql.Consistency) Query {
 	return m.Called(c).Get(0).(Query)
 }
 
+func (m QueryMock) SerialConsistency(c gocql.SerialConsistency) Query {
+	return m.Called(c).Get(0).(Query)
+}
+
 type query struct {
 	q *gocql.Query
 }
@@ -179,6 +190,10 @@ func (q query) SetConsistency(c gocql.Consistency) {
 
 func (q query) Consistency(c gocql.Consistency) Query {
 	return &query{q: q.q.Consistency(c)}
+}
+
+func (q query) SerialConsistency(cons gocql.SerialConsistency) Query {
+	return &query{q: q.q.SerialConsistency(cons)}
 }
 
 func (q query) MapScanCAS(dest map[string]interface{}) (applied bool, err error) {
