@@ -59,6 +59,7 @@ func TestQueryMock(t *testing.T) {
 	var m, e = &QueryMock{}, fmt.Errorf("e")
 	ctx := context.Background()
 	it := &IteratorMock{}
+	rt := &gocql.SimpleRetryPolicy{NumRetries: 3}
 	testMock(t, m, &m.Mock, []struct {
 		method    string
 		arguments []interface{}
@@ -80,6 +81,7 @@ func TestQueryMock(t *testing.T) {
 		{"SetConsistency", []interface{}{gocql.One}, nil},
 		{"Consistency", []interface{}{gocql.One}, []interface{}{m}},
 		{"SerialConsistency", []interface{}{gocql.LocalSerial}, []interface{}{m}},
+		{"RetryPolicy", []interface{}{rt}, []interface{}{m}},
 	})
 }
 

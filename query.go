@@ -70,6 +70,9 @@ type Query interface {
 	// SERIAL. This option will be ignored for anything else that a
 	// conditional update/insert.
 	SerialConsistency(cons gocql.SerialConsistency) Query
+
+	// RetryPolicy sets the policy to use when retrying the query.
+	RetryPolicy(r gocql.RetryPolicy) Query
 }
 
 var (
@@ -140,6 +143,10 @@ func (m QueryMock) Consistency(c gocql.Consistency) Query {
 	return m.Called(c).Get(0).(Query)
 }
 
+func (m QueryMock) RetryPolicy(r gocql.RetryPolicy) Query {
+	return m.Called(r).Get(0).(Query)
+}
+
 func (m QueryMock) SerialConsistency(c gocql.SerialConsistency) Query {
 	return m.Called(c).Get(0).(Query)
 }
@@ -198,4 +205,8 @@ func (q query) SerialConsistency(cons gocql.SerialConsistency) Query {
 
 func (q query) MapScanCAS(dest map[string]interface{}) (applied bool, err error) {
 	return q.q.MapScanCAS(dest)
+}
+
+func (q query) RetryPolicy(r gocql.RetryPolicy) Query {
+	return &query{q: q.q.RetryPolicy(r)}
 }
