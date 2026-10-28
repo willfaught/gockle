@@ -71,7 +71,7 @@ type Session interface {
 }
 
 var (
-	_ Session = SessionMock{}
+	_ Session = &SessionMock{}
 	_ Session = session{}
 )
 
@@ -102,65 +102,65 @@ type SessionMock struct {
 }
 
 // Batch implements Session.
-func (m SessionMock) Batch(kind BatchKind) Batch {
+func (m *SessionMock) Batch(kind BatchKind) Batch {
 	return m.Called(kind).Get(0).(Batch)
 }
 
 // Close implements Session.
-func (m SessionMock) Close() {
+func (m *SessionMock) Close() {
 	m.Called()
 }
 
 // Columns implements Session.
-func (m SessionMock) Columns(keyspace, table string) (map[string]gocql.TypeInfo, error) {
+func (m *SessionMock) Columns(keyspace, table string) (map[string]gocql.TypeInfo, error) {
 	var r = m.Called(keyspace, table)
 
 	return r.Get(0).(map[string]gocql.TypeInfo), r.Error(1)
 }
 
 // Exec implements Session.
-func (m SessionMock) Exec(statement string, arguments ...any) error {
+func (m *SessionMock) Exec(statement string, arguments ...any) error {
 	return m.Called(statement, arguments).Error(0)
 }
 
 // Scan implements Session.
-func (m SessionMock) Scan(statement string, results []any, arguments ...any) error {
+func (m *SessionMock) Scan(statement string, results []any, arguments ...any) error {
 	return m.Called(statement, results, arguments).Error(0)
 }
 
 // ScanIterator implements Session.
-func (m SessionMock) ScanIterator(statement string, arguments ...any) Iterator {
+func (m *SessionMock) ScanIterator(statement string, arguments ...any) Iterator {
 	return m.Called(statement, arguments).Get(0).(Iterator)
 }
 
 // ScanMap implements Session.
-func (m SessionMock) ScanMap(statement string, results map[string]any, arguments ...any) error {
+func (m *SessionMock) ScanMap(statement string, results map[string]any, arguments ...any) error {
 	return m.Called(statement, results, arguments).Error(0)
 }
 
 // ScanMapSlice implements Session.
-func (m SessionMock) ScanMapSlice(statement string, arguments ...any) ([]map[string]any, error) {
+func (m *SessionMock) ScanMapSlice(statement string, arguments ...any) ([]map[string]any, error) {
 	var r = m.Called(statement, arguments)
 
 	return r.Get(0).([]map[string]any), r.Error(1)
 }
 
 // ScanMapTx implements Session.
-func (m SessionMock) ScanMapTx(statement string, results map[string]any, arguments ...any) (bool, error) {
+func (m *SessionMock) ScanMapTx(statement string, results map[string]any, arguments ...any) (bool, error) {
 	var r = m.Called(statement, results, arguments)
 
 	return r.Bool(0), r.Error(1)
 }
 
 // Tables implements Session.
-func (m SessionMock) Tables(keyspace string) ([]string, error) {
+func (m *SessionMock) Tables(keyspace string) ([]string, error) {
 	var r = m.Called(keyspace)
 
 	return r.Get(0).([]string), r.Error(1)
 }
 
 // Query implements Session.
-func (m SessionMock) Query(statement string, arguments ...any) Query {
+func (m *SessionMock) Query(statement string, arguments ...any) Query {
 	return m.Called(statement, arguments).Get(0).(Query)
 }
 

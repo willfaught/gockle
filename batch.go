@@ -27,7 +27,7 @@ type Batch interface {
 }
 
 var (
-	_ Batch = BatchMock{}
+	_ Batch = &BatchMock{}
 	_ Batch = batch{}
 )
 
@@ -53,17 +53,17 @@ type BatchMock struct {
 }
 
 // Add implements Batch.
-func (m BatchMock) Add(statement string, arguments ...any) {
+func (m *BatchMock) Add(statement string, arguments ...any) {
 	m.Called(statement, arguments)
 }
 
 // Exec implements Batch.
-func (m BatchMock) Exec() error {
+func (m *BatchMock) Exec() error {
 	return m.Called().Error(0)
 }
 
 // ExecTx implements Batch.
-func (m BatchMock) ExecTx() ([]map[string]any, error) {
+func (m *BatchMock) ExecTx() ([]map[string]any, error) {
 	var r = m.Called()
 
 	return r.Get(0).([]map[string]any), r.Error(1)

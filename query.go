@@ -76,7 +76,7 @@ type Query interface {
 }
 
 var (
-	_ Query = QueryMock{}
+	_ Query = &QueryMock{}
 	_ Query = query{}
 )
 
@@ -86,68 +86,68 @@ type QueryMock struct {
 }
 
 // PageSize implements Query.
-func (m QueryMock) PageSize(n int) Query {
+func (m *QueryMock) PageSize(n int) Query {
 	return m.Called(n).Get(0).(Query)
 }
 
 // WithContext implements Query.
-func (m QueryMock) WithContext(ctx context.Context) Query {
+func (m *QueryMock) WithContext(ctx context.Context) Query {
 	return m.Called(ctx).Get(0).(Query)
 }
 
 // PageState implements Query.
-func (m QueryMock) PageState(state []byte) Query {
+func (m *QueryMock) PageState(state []byte) Query {
 	return m.Called(state).Get(0).(Query)
 }
 
 // Exec implements Query.
-func (m QueryMock) Exec() error {
+func (m *QueryMock) Exec() error {
 	return m.Called().Error(0)
 }
 
 // Iter implements Query.
-func (m QueryMock) Iter() Iterator {
+func (m *QueryMock) Iter() Iterator {
 	return m.Called().Get(0).(Iterator)
 }
 
 // MapScan implements Query.
-func (m QueryMock) MapScan(mm map[string]any) error {
+func (m *QueryMock) MapScan(mm map[string]any) error {
 	return m.Called(mm).Error(0)
 }
 
 // MapScan implements Query.
-func (m QueryMock) MapScanCAS(mm map[string]any) (bool, error) {
+func (m *QueryMock) MapScanCAS(mm map[string]any) (bool, error) {
 	call := m.Called(mm)
 	return call.Bool(0), call.Error(1)
 }
 
 // Scan implements Query.
-func (m QueryMock) Scan(dest ...any) error {
+func (m *QueryMock) Scan(dest ...any) error {
 	return m.Called(dest).Error(0)
 }
 
 // Release implements Query.
-func (m QueryMock) Release() {
+func (m *QueryMock) Release() {
 	m.Called()
 }
 
-func (m QueryMock) GetConsistency() gocql.Consistency {
+func (m *QueryMock) GetConsistency() gocql.Consistency {
 	return m.Called().Get(0).(gocql.Consistency)
 }
 
-func (m QueryMock) SetConsistency(c gocql.Consistency) {
+func (m *QueryMock) SetConsistency(c gocql.Consistency) {
 	m.Called(c)
 }
 
-func (m QueryMock) Consistency(c gocql.Consistency) Query {
+func (m *QueryMock) Consistency(c gocql.Consistency) Query {
 	return m.Called(c).Get(0).(Query)
 }
 
-func (m QueryMock) RetryPolicy(r gocql.RetryPolicy) Query {
+func (m *QueryMock) RetryPolicy(r gocql.RetryPolicy) Query {
 	return m.Called(r).Get(0).(Query)
 }
 
-func (m QueryMock) SerialConsistency(c gocql.SerialConsistency) Query {
+func (m *QueryMock) SerialConsistency(c gocql.SerialConsistency) Query {
 	return m.Called(c).Get(0).(Query)
 }
 
