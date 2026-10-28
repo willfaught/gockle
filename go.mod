@@ -1,6 +1,6 @@
 module github.com/willfaught/gockle
 
-go 1.26.0
+go 1.27.3
 
 require (
 	github.com/gocql/gocql v1.2.1
