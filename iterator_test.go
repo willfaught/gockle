@@ -62,13 +62,13 @@ func TestIterator(t *testing.T) {
 	if i := s.ScanIterator("select * from gockle_test.test"); i == nil {
 		t.Error("Actual iterator nil, expected not nil")
 	} else {
-		var a = map[string]interface{}{}
+		var a = map[string]any{}
 
 		if !i.ScanMap(a) {
 			t.Errorf("Actual more false, expected true")
 		}
 
-		if e := (map[string]interface{}{"id": 1, "n": 2}); !reflect.DeepEqual(a, e) {
+		if e := (map[string]any{"id": 1, "n": 2}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual map %v, expected %v", a, e)
 		}
 
@@ -169,18 +169,18 @@ func TestIteratorMock(t *testing.T) {
 
 	testMock(t, m, &m.Mock, []struct {
 		method    string
-		arguments []interface{}
-		results   []interface{}
+		arguments []any
+		results   []any
 	}{
-		{"Close", nil, []interface{}{nil}},
-		{"Close", nil, []interface{}{e}},
-		{"Scan", []interface{}{[]interface{}(nil)}, []interface{}{false}},
-		{"Scan", []interface{}{[]interface{}{1}}, []interface{}{true}},
-		{"ScanMap", []interface{}{map[string]interface{}(nil)}, []interface{}{false}},
-		{"ScanMap", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{true}},
-		{"WillSwitchPage", nil, []interface{}{false}},
-		{"WillSwitchPage", nil, []interface{}{true}},
-		{"PageState", nil, []interface{}{[]byte{}}},
-		{"PageState", nil, []interface{}{[]byte{1}}},
+		{"Close", nil, []any{nil}},
+		{"Close", nil, []any{e}},
+		{"Scan", []any{[]any(nil)}, []any{false}},
+		{"Scan", []any{[]any{1}}, []any{true}},
+		{"ScanMap", []any{map[string]any(nil)}, []any{false}},
+		{"ScanMap", []any{map[string]any{"a": 1}}, []any{true}},
+		{"WillSwitchPage", nil, []any{false}},
+		{"WillSwitchPage", nil, []any{true}},
+		{"PageState", nil, []any{[]byte{}}},
+		{"PageState", nil, []any{[]byte{1}}},
 	})
 }

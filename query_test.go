@@ -44,8 +44,8 @@ func TestQuery(t *testing.T) {
 		t.Errorf("Actual error %v, expected no error", err)
 	}
 	// MapScan
-	var actual = map[string]interface{}{}
-	var expected = map[string]interface{}{"id": 1, "n": 2}
+	var actual = map[string]any{}
+	var expected = map[string]any{"id": 1, "n": 2}
 	if err := q.MapScan(actual); err == nil {
 		if !reflect.DeepEqual(actual, expected) {
 			t.Errorf("Actual map %v, expected %v", actual, expected)
@@ -62,26 +62,26 @@ func TestQueryMock(t *testing.T) {
 	rt := &gocql.SimpleRetryPolicy{NumRetries: 3}
 	testMock(t, m, &m.Mock, []struct {
 		method    string
-		arguments []interface{}
-		results   []interface{}
+		arguments []any
+		results   []any
 	}{
-		{"PageSize", []interface{}{1}, []interface{}{m}},
-		{"WithContext", []interface{}{ctx}, []interface{}{m}},
-		{"PageState", []interface{}{[]byte{1}}, []interface{}{m}},
-		{"Scan", []interface{}{[]interface{}(nil)}, []interface{}{e}},
-		{"Scan", []interface{}{[]interface{}{1}}, []interface{}{nil}},
-		{"Exec", nil, []interface{}{e}},
-		{"Exec", nil, []interface{}{nil}},
-		{"Iter", nil, []interface{}{it}},
-		{"MapScan", []interface{}{map[string]interface{}(nil)}, []interface{}{nil}},
-		{"MapScan", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{e}},
-		{"MapScanCAS", []interface{}{map[string]interface{}{"a": 1}}, []interface{}{true, e}},
+		{"PageSize", []any{1}, []any{m}},
+		{"WithContext", []any{ctx}, []any{m}},
+		{"PageState", []any{[]byte{1}}, []any{m}},
+		{"Scan", []any{[]any(nil)}, []any{e}},
+		{"Scan", []any{[]any{1}}, []any{nil}},
+		{"Exec", nil, []any{e}},
+		{"Exec", nil, []any{nil}},
+		{"Iter", nil, []any{it}},
+		{"MapScan", []any{map[string]any(nil)}, []any{nil}},
+		{"MapScan", []any{map[string]any{"a": 1}}, []any{e}},
+		{"MapScanCAS", []any{map[string]any{"a": 1}}, []any{true, e}},
 		{"Release", nil, nil},
-		{"GetConsistency", nil, []interface{}{gocql.Quorum}},
-		{"SetConsistency", []interface{}{gocql.One}, nil},
-		{"Consistency", []interface{}{gocql.One}, []interface{}{m}},
-		{"SerialConsistency", []interface{}{gocql.LocalSerial}, []interface{}{m}},
-		{"RetryPolicy", []interface{}{rt}, []interface{}{m}},
+		{"GetConsistency", nil, []any{gocql.Quorum}},
+		{"SetConsistency", []any{gocql.One}, nil},
+		{"Consistency", []any{gocql.One}, []any{m}},
+		{"SerialConsistency", []any{gocql.LocalSerial}, []any{m}},
+		{"RetryPolicy", []any{rt}, []any{m}},
 	})
 }
 

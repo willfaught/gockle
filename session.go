@@ -36,28 +36,28 @@ type Session interface {
 	Columns(keyspace, table string) (map[string]gocql.TypeInfo, error)
 
 	// Exec executes the query for statement and arguments.
-	Exec(statement string, arguments ...interface{}) error
+	Exec(statement string, arguments ...any) error
 
 	// Scan executes the query for statement and arguments and puts the first
 	// result row in results.
-	Scan(statement string, results []interface{}, arguments ...interface{}) error
+	Scan(statement string, results []any, arguments ...any) error
 
 	// ScanIterator executes the query for statement and arguments and returns an
 	// Iterator for the results.
-	ScanIterator(statement string, arguments ...interface{}) Iterator
+	ScanIterator(statement string, arguments ...any) Iterator
 
 	// ScanMap executes the query for statement and arguments and puts the first
 	// result row in results.
-	ScanMap(statement string, results map[string]interface{}, arguments ...interface{}) error
+	ScanMap(statement string, results map[string]any, arguments ...any) error
 
 	// ScanMapSlice executes the query for statement and arguments and returns all
 	// the result rows.
-	ScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error)
+	ScanMapSlice(statement string, arguments ...any) ([]map[string]any, error)
 
 	// ScanMapTx executes the query for statement and arguments as a lightweight
 	// transaction. If the query is not applied, it puts the current values for the
 	// conditional columns in results. It returns whether the query is applied.
-	ScanMapTx(statement string, results map[string]interface{}, arguments ...interface{}) (bool, error)
+	ScanMapTx(statement string, results map[string]any, arguments ...any) (bool, error)
 
 	// Tables returns the table names for keyspace. Schema changes during a session
 	// are not reflected; you must open a new Session to observe them.
@@ -67,7 +67,7 @@ type Session interface {
 	// Further details of the query may be tweaked using the resulting Query
 	// before the query is executed. Query is automatically prepared if
 	// it has not previously been executed.
-	Query(statement string, arguments ...interface{}) Query
+	Query(statement string, arguments ...any) Query
 }
 
 var (
@@ -119,34 +119,34 @@ func (m SessionMock) Columns(keyspace, table string) (map[string]gocql.TypeInfo,
 }
 
 // Exec implements Session.
-func (m SessionMock) Exec(statement string, arguments ...interface{}) error {
+func (m SessionMock) Exec(statement string, arguments ...any) error {
 	return m.Called(statement, arguments).Error(0)
 }
 
 // Scan implements Session.
-func (m SessionMock) Scan(statement string, results []interface{}, arguments ...interface{}) error {
+func (m SessionMock) Scan(statement string, results []any, arguments ...any) error {
 	return m.Called(statement, results, arguments).Error(0)
 }
 
 // ScanIterator implements Session.
-func (m SessionMock) ScanIterator(statement string, arguments ...interface{}) Iterator {
+func (m SessionMock) ScanIterator(statement string, arguments ...any) Iterator {
 	return m.Called(statement, arguments).Get(0).(Iterator)
 }
 
 // ScanMap implements Session.
-func (m SessionMock) ScanMap(statement string, results map[string]interface{}, arguments ...interface{}) error {
+func (m SessionMock) ScanMap(statement string, results map[string]any, arguments ...any) error {
 	return m.Called(statement, results, arguments).Error(0)
 }
 
 // ScanMapSlice implements Session.
-func (m SessionMock) ScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
+func (m SessionMock) ScanMapSlice(statement string, arguments ...any) ([]map[string]any, error) {
 	var r = m.Called(statement, arguments)
 
-	return r.Get(0).([]map[string]interface{}), r.Error(1)
+	return r.Get(0).([]map[string]any), r.Error(1)
 }
 
 // ScanMapTx implements Session.
-func (m SessionMock) ScanMapTx(statement string, results map[string]interface{}, arguments ...interface{}) (bool, error) {
+func (m SessionMock) ScanMapTx(statement string, results map[string]any, arguments ...any) (bool, error) {
 	var r = m.Called(statement, results, arguments)
 
 	return r.Bool(0), r.Error(1)
@@ -160,7 +160,7 @@ func (m SessionMock) Tables(keyspace string) ([]string, error) {
 }
 
 // Query implements Session.
-func (m SessionMock) Query(statement string, arguments ...interface{}) Query {
+func (m SessionMock) Query(statement string, arguments ...any) Query {
 	return m.Called(statement, arguments).Get(0).(Query)
 }
 
@@ -198,27 +198,27 @@ func (s session) Columns(keyspace, table string) (map[string]gocql.TypeInfo, err
 	return types, nil
 }
 
-func (s session) Exec(statement string, arguments ...interface{}) error {
+func (s session) Exec(statement string, arguments ...any) error {
 	return s.s.Query(statement, arguments...).Exec()
 }
 
-func (s session) Scan(statement string, results []interface{}, arguments ...interface{}) error {
+func (s session) Scan(statement string, results []any, arguments ...any) error {
 	return s.s.Query(statement, arguments...).Scan(results...)
 }
 
-func (s session) ScanIterator(statement string, arguments ...interface{}) Iterator {
+func (s session) ScanIterator(statement string, arguments ...any) Iterator {
 	return iterator{i: s.s.Query(statement, arguments...).Iter()}
 }
 
-func (s session) ScanMap(statement string, results map[string]interface{}, arguments ...interface{}) error {
+func (s session) ScanMap(statement string, results map[string]any, arguments ...any) error {
 	return s.s.Query(statement, arguments...).MapScan(results)
 }
 
-func (s session) ScanMapSlice(statement string, arguments ...interface{}) ([]map[string]interface{}, error) {
+func (s session) ScanMapSlice(statement string, arguments ...any) ([]map[string]any, error) {
 	return s.s.Query(statement, arguments...).Iter().SliceMap()
 }
 
-func (s session) ScanMapTx(statement string, results map[string]interface{}, arguments ...interface{}) (bool, error) {
+func (s session) ScanMapTx(statement string, results map[string]any, arguments ...any) (bool, error) {
 	return s.s.Query(statement, arguments...).MapScanCAS(results)
 }
 
@@ -238,6 +238,6 @@ func (s session) Tables(keyspace string) ([]string, error) {
 	return ts, nil
 }
 
-func (s session) Query(statement string, arguments ...interface{}) Query {
+func (s session) Query(statement string, arguments ...any) Query {
 	return query{q: s.s.Query(statement, arguments...)}
 }

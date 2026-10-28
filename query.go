@@ -31,7 +31,7 @@ type Query interface {
 	// MapScan executes the query, copies the columns of the first selected row
 	// into the map pointed at by m and discards the rest. If no rows
 	// were selected, ErrNotFound is returned.
-	MapScan(m map[string]interface{}) error
+	MapScan(m map[string]any) error
 
 	// MapScanCAS executes a lightweight transaction (i.e. an UPDATE or INSERT
 	// statement containing an IF clause). If the transaction fails because
@@ -41,12 +41,12 @@ type Query interface {
 	// As for INSERT .. IF NOT EXISTS, previous values will be returned as if
 	// SELECT * FROM. So using ScanCAS with INSERT is inherently prone to
 	// column mismatching. MapScanCAS is added to capture them safely.
-	MapScanCAS(dest map[string]interface{}) (applied bool, err error)
+	MapScanCAS(dest map[string]any) (applied bool, err error)
 
 	// Scan executes the query, copies the columns of the first selected row
 	// into the values pointed at by dest and discards the rest. If no rows
 	// were selected, ErrNotFound is returned.
-	Scan(dest ...interface{}) error
+	Scan(dest ...any) error
 
 	// Release releases a query back into a pool of queries. Released queries
 	// cannot be reused.
@@ -111,18 +111,18 @@ func (m QueryMock) Iter() Iterator {
 }
 
 // MapScan implements Query.
-func (m QueryMock) MapScan(mm map[string]interface{}) error {
+func (m QueryMock) MapScan(mm map[string]any) error {
 	return m.Called(mm).Error(0)
 }
 
 // MapScan implements Query.
-func (m QueryMock) MapScanCAS(mm map[string]interface{}) (bool, error) {
+func (m QueryMock) MapScanCAS(mm map[string]any) (bool, error) {
 	call := m.Called(mm)
 	return call.Bool(0), call.Error(1)
 }
 
 // Scan implements Query.
-func (m QueryMock) Scan(dest ...interface{}) error {
+func (m QueryMock) Scan(dest ...any) error {
 	return m.Called(dest).Error(0)
 }
 
@@ -175,11 +175,11 @@ func (q query) Iter() Iterator {
 	return &iterator{i: q.q.Iter()}
 }
 
-func (q query) MapScan(m map[string]interface{}) error {
+func (q query) MapScan(m map[string]any) error {
 	return q.q.MapScan(m)
 }
 
-func (q query) Scan(dest ...interface{}) error {
+func (q query) Scan(dest ...any) error {
 	return q.q.Scan(dest...)
 }
 
@@ -203,7 +203,7 @@ func (q query) SerialConsistency(cons gocql.SerialConsistency) Query {
 	return &query{q: q.q.SerialConsistency(cons)}
 }
 
-func (q query) MapScanCAS(dest map[string]interface{}) (applied bool, err error) {
+func (q query) MapScanCAS(dest map[string]any) (applied bool, err error) {
 	return q.q.MapScanCAS(dest)
 }
 

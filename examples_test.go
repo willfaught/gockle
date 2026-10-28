@@ -11,7 +11,7 @@ var mySession = &SessionMock{}
 func ExampleIterator_ScanMap() {
 	var iteratorMock = &IteratorMock{}
 
-	iteratorMock.When("ScanMap", mock.Any).Call(func(m map[string]interface{}) bool {
+	iteratorMock.When("ScanMap", mock.Any).Call(func(m map[string]any) bool {
 		m["id"] = 1
 		m["name"] = "alex"
 
@@ -29,7 +29,7 @@ func ExampleIterator_ScanMap() {
 
 	var session Session = sessionMock
 	var iterator = session.ScanIterator(query)
-	var row = map[string]interface{}{}
+	var row = map[string]any{}
 
 	for more := true; more; {
 		more = iterator.ScanMap(row)
@@ -76,7 +76,7 @@ func ExampleSession_ScanMapSlice() {
 
 	const query = "select * from users"
 
-	sessionMock.When("ScanMapSlice", query, mock.Any).Return([]map[string]interface{}{{"id": 1, "name": "alex"}}, nil)
+	sessionMock.When("ScanMapSlice", query, mock.Any).Return([]map[string]any{{"id": 1, "name": "alex"}}, nil)
 	sessionMock.When("Close").Return()
 
 	var session Session = sessionMock

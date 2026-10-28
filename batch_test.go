@@ -43,7 +43,7 @@ func TestBatch(t *testing.T) {
 	b.Add("update gockle_test.test set n = 4 where id = 1 if n = 3")
 
 	if a, err := b.ExecTx(); err == nil {
-		if e := ([]map[string]interface{}{{"[applied]": true}}); !reflect.DeepEqual(a, e) {
+		if e := ([]map[string]any{{"[applied]": true}}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual tx %v, expected %v", a, e)
 		}
 	} else {
@@ -62,14 +62,14 @@ func TestBatchMock(t *testing.T) {
 
 	testMock(t, m, &m.Mock, []struct {
 		method    string
-		arguments []interface{}
-		results   []interface{}
+		arguments []any
+		results   []any
 	}{
-		{"Add", []interface{}{"", []interface{}(nil)}, nil},
-		{"Add", []interface{}{"a", []interface{}{1}}, nil},
-		{"Exec", nil, []interface{}{nil}},
-		{"Exec", nil, []interface{}{e}},
-		{"ExecTx", nil, []interface{}{([]map[string]interface{})(nil), nil}},
-		{"ExecTx", nil, []interface{}{[]map[string]interface{}{}, e}},
+		{"Add", []any{"", []any(nil)}, nil},
+		{"Add", []any{"a", []any{1}}, nil},
+		{"Exec", nil, []any{nil}},
+		{"Exec", nil, []any{e}},
+		{"ExecTx", nil, []any{([]map[string]any)(nil), nil}},
+		{"ExecTx", nil, []any{[]map[string]any{}, e}},
 	})
 }

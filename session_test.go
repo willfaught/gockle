@@ -135,29 +135,29 @@ func TestSessionMock(t *testing.T) {
 
 	testMock(t, m, &m.Mock, []struct {
 		method    string
-		arguments []interface{}
-		results   []interface{}
+		arguments []any
+		results   []any
 	}{
 		{"Close", nil, nil},
-		{"Columns", []interface{}{"", ""}, []interface{}{map[string]gocql.TypeInfo(nil), nil}},
-		{"Columns", []interface{}{"a", "b"}, []interface{}{map[string]gocql.TypeInfo{"c": gocql.NativeType{}}, e}},
-		{"Batch", []interface{}{BatchKind(0)}, []interface{}{(*batch)(nil)}},
-		{"Batch", []interface{}{BatchKind(1)}, []interface{}{&batch{}}},
-		{"Exec", []interface{}{"", []interface{}(nil)}, []interface{}{nil}},
-		{"Exec", []interface{}{"a", []interface{}{1}}, []interface{}{e}},
-		{"Scan", []interface{}{"", []interface{}(nil), []interface{}(nil)}, []interface{}{nil}},
-		{"Scan", []interface{}{"a", []interface{}{1}, []interface{}{1}}, []interface{}{e}},
-		{"ScanIterator", []interface{}{"", []interface{}(nil)}, []interface{}{(*iterator)(nil)}},
-		{"ScanIterator", []interface{}{"a", []interface{}{1}}, []interface{}{iterator{}}},
-		{"ScanMap", []interface{}{"", map[string]interface{}(nil), []interface{}(nil)}, []interface{}{nil}},
-		{"ScanMap", []interface{}{"a", map[string]interface{}{"b": 2}, []interface{}{1}}, []interface{}{e}},
-		{"ScanMapSlice", []interface{}{"", []interface{}(nil)}, []interface{}{[]map[string]interface{}(nil), nil}},
-		{"ScanMapSlice", []interface{}{"a", []interface{}{1}}, []interface{}{[]map[string]interface{}{{"b": 2}}, e}},
-		{"ScanMapTx", []interface{}{"", map[string]interface{}(nil), []interface{}(nil)}, []interface{}{false, nil}},
-		{"ScanMapTx", []interface{}{"a", map[string]interface{}{"b": 2}, []interface{}{1}}, []interface{}{true, e}},
-		{"Tables", []interface{}{""}, []interface{}{[]string(nil), nil}},
-		{"Tables", []interface{}{"a"}, []interface{}{[]string{"b"}, e}},
-		{"Query", []interface{}{"a", []interface{}{1}}, []interface{}{query{}}},
+		{"Columns", []any{"", ""}, []any{map[string]gocql.TypeInfo(nil), nil}},
+		{"Columns", []any{"a", "b"}, []any{map[string]gocql.TypeInfo{"c": gocql.NativeType{}}, e}},
+		{"Batch", []any{BatchKind(0)}, []any{(*batch)(nil)}},
+		{"Batch", []any{BatchKind(1)}, []any{&batch{}}},
+		{"Exec", []any{"", []any(nil)}, []any{nil}},
+		{"Exec", []any{"a", []any{1}}, []any{e}},
+		{"Scan", []any{"", []any(nil), []any(nil)}, []any{nil}},
+		{"Scan", []any{"a", []any{1}, []any{1}}, []any{e}},
+		{"ScanIterator", []any{"", []any(nil)}, []any{(*iterator)(nil)}},
+		{"ScanIterator", []any{"a", []any{1}}, []any{iterator{}}},
+		{"ScanMap", []any{"", map[string]any(nil), []any(nil)}, []any{nil}},
+		{"ScanMap", []any{"a", map[string]any{"b": 2}, []any{1}}, []any{e}},
+		{"ScanMapSlice", []any{"", []any(nil)}, []any{[]map[string]any(nil), nil}},
+		{"ScanMapSlice", []any{"a", []any{1}}, []any{[]map[string]any{{"b": 2}}, e}},
+		{"ScanMapTx", []any{"", map[string]any(nil), []any(nil)}, []any{false, nil}},
+		{"ScanMapTx", []any{"a", map[string]any{"b": 2}, []any{1}}, []any{true, e}},
+		{"Tables", []any{""}, []any{[]string(nil), nil}},
+		{"Tables", []any{"a"}, []any{[]string{"b"}, e}},
+		{"Query", []any{"a", []any{1}}, []any{query{}}},
 	})
 }
 
@@ -196,7 +196,7 @@ func TestSessionQuery(t *testing.T) {
 	// Scan
 	var id, n int
 
-	if err := s.Scan("select id, n from gockle_test.test", []interface{}{&id, &n}); err == nil {
+	if err := s.Scan("select id, n from gockle_test.test", []any{&id, &n}); err == nil {
 		if id != 1 {
 			t.Errorf("Actual id %v, expected 1", id)
 		}
@@ -209,7 +209,7 @@ func TestSessionQuery(t *testing.T) {
 	}
 
 	// ScanMap
-	var am, em = map[string]interface{}{}, map[string]interface{}{"id": 1, "n": 2}
+	var am, em = map[string]any{}, map[string]any{"id": 1, "n": 2}
 
 	if err := s.ScanMap("select id, n from gockle_test.test", am); err == nil {
 		if !reflect.DeepEqual(am, em) {
@@ -220,7 +220,7 @@ func TestSessionQuery(t *testing.T) {
 	}
 
 	// ScanMapTx
-	am = map[string]interface{}{}
+	am = map[string]any{}
 
 	if b, err := s.ScanMapTx("update gockle_test.test set n = 3 where id = 1 if n = 2", am); err == nil {
 		if !b {
@@ -235,7 +235,7 @@ func TestSessionQuery(t *testing.T) {
 	}
 
 	// ScanMapSlice
-	var es = []map[string]interface{}{{"id": 1, "n": 3}}
+	var es = []map[string]any{{"id": 1, "n": 3}}
 
 	if as, err := s.ScanMapSlice("select * from gockle_test.test"); err == nil {
 		if !reflect.DeepEqual(as, es) {
@@ -261,10 +261,10 @@ func newSession(t *testing.T) Session {
 	return NewSession(s)
 }
 
-func testMock(t *testing.T, i interface{}, m *mock.Mock, tests []struct {
+func testMock(t *testing.T, i any, m *mock.Mock, tests []struct {
 	method    string
-	arguments []interface{}
-	results   []interface{}
+	arguments []any
+	results   []any
 }) {
 	var v = reflect.ValueOf(i)
 
@@ -287,7 +287,7 @@ func testMock(t *testing.T, i interface{}, m *mock.Mock, tests []struct {
 			vs = method.Call(vs)
 		}
 
-		var is []interface{}
+		var is []any
 
 		for _, v := range vs {
 			is = append(is, v.Interface())

@@ -12,11 +12,11 @@ type Iterator interface {
 
 	// Scan puts the current result row in results and returns whether there are
 	// more result rows.
-	Scan(results ...interface{}) bool
+	Scan(results ...any) bool
 
 	// ScanMap puts the current result row in results and returns whether there are
 	// more result rows.
-	ScanMap(results map[string]interface{}) bool
+	ScanMap(results map[string]any) bool
 
 	// WillSwitchPage detects if iterator reached end of current page and the
 	// next page is available.
@@ -43,12 +43,12 @@ func (m IteratorMock) Close() error {
 }
 
 // Scan implements Iterator.
-func (m IteratorMock) Scan(results ...interface{}) bool {
+func (m IteratorMock) Scan(results ...any) bool {
 	return m.Called(results).Bool(0)
 }
 
 // ScanMap implements Iterator.
-func (m IteratorMock) ScanMap(results map[string]interface{}) bool {
+func (m IteratorMock) ScanMap(results map[string]any) bool {
 	return m.Called(results).Bool(0)
 }
 
@@ -70,11 +70,11 @@ func (i iterator) Close() error {
 	return i.i.Close()
 }
 
-func (i iterator) Scan(results ...interface{}) bool {
+func (i iterator) Scan(results ...any) bool {
 	return i.i.Scan(results...)
 }
 
-func (i iterator) ScanMap(results map[string]interface{}) bool {
+func (i iterator) ScanMap(results map[string]any) bool {
 	return i.i.MapScan(results)
 }
 

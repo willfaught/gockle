@@ -12,7 +12,7 @@ const ColumnApplied = "[applied]"
 // Batch is an ordered collection of CQL queries.
 type Batch interface {
 	// Add adds the query for statement and arguments.
-	Add(statement string, arguments ...interface{})
+	Add(statement string, arguments ...any)
 
 	// Exec executes the queries in the order they were added.
 	Exec() error
@@ -23,7 +23,7 @@ type Batch interface {
 	// ColumnApplied has a bool that indicates whether the conditional statement was
 	// applied. If a conditional statement was not applied, the current values for
 	// the columns are put into the map.
-	ExecTx() ([]map[string]interface{}, error)
+	ExecTx() ([]map[string]any, error)
 }
 
 var (
@@ -53,7 +53,7 @@ type BatchMock struct {
 }
 
 // Add implements Batch.
-func (m BatchMock) Add(statement string, arguments ...interface{}) {
+func (m BatchMock) Add(statement string, arguments ...any) {
 	m.Called(statement, arguments)
 }
 
@@ -63,10 +63,10 @@ func (m BatchMock) Exec() error {
 }
 
 // ExecTx implements Batch.
-func (m BatchMock) ExecTx() ([]map[string]interface{}, error) {
+func (m BatchMock) ExecTx() ([]map[string]any, error) {
 	var r = m.Called()
 
-	return r.Get(0).([]map[string]interface{}), r.Error(1)
+	return r.Get(0).([]map[string]any), r.Error(1)
 }
 
 type batch struct {
@@ -75,7 +75,7 @@ type batch struct {
 	s *gocql.Session
 }
 
-func (b batch) Add(statement string, arguments ...interface{}) {
+func (b batch) Add(statement string, arguments ...any) {
 	b.b.Query(statement, arguments...)
 }
 
@@ -83,8 +83,8 @@ func (b batch) Exec() error {
 	return b.s.ExecuteBatch(b.b)
 }
 
-func (b batch) ExecTx() ([]map[string]interface{}, error) {
-	var m = map[string]interface{}{}
+func (b batch) ExecTx() ([]map[string]any, error) {
+	var m = map[string]any{}
 	var a, i, err = b.s.MapExecuteBatchCAS(b.b, m)
 
 	if err != nil {
@@ -102,7 +102,7 @@ func (b batch) ExecTx() ([]map[string]interface{}, error) {
 	}
 
 	m[ColumnApplied] = a
-	s = append([]map[string]interface{}{m}, s...)
+	s = append([]map[string]any{m}, s...)
 
 	return s, nil
 }
